@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ include "dogfood-tetrate-managementplane.fullname" . }}-cert-manager
+  labels:
+  {{- include "dogfood-tetrate-managementplane.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  destination:
+    namespace: crossplane
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: clusters/production/tsb-mp
+    repoURL: git@github.com:tetratecx/dogfood-state.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m0s
+      limit: 5
+    syncOptions:
+    - CreateNamespace=true

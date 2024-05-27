@@ -1,0 +1,21 @@
+apiVersion: container.gcp.upbound.io/v1beta1
+kind: Cluster
+metadata:
+  name: {{ include "dogfood-gcp-cluster.fullname" . }}
+  labels:
+  {{- include "dogfood-gcp-cluster.labels" . | nindent 4 }}
+spec:
+  forProvider:
+    datapathProvider: ADVANCED_DATAPATH
+    deletionProtection: false
+    initialNodeCount: 1
+    location: us-east1
+    networkRef:
+      name: main
+    subnetworkRef:
+      name: us-east1-mp
+  providerConfigRef:
+    name: gcp-provider-config
+  writeConnectionSecretToRef:
+    name: {{ include "dogfood-gcp-cluster.fullname" . }}-connect-write
+    namespace: crossplane-system
