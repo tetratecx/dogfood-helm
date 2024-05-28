@@ -1,0 +1,17 @@
+apiVersion: helm.crossplane.io/v1beta1
+kind: Release
+metadata:
+  name: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-baseline-cert-manager
+  labels:
+  {{- include "dogfood-apps-tetrate-managementplane.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook-weight": "10"
+spec:
+  forProvider:
+    chart:
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.14.5
+    namespace: cert-manager
+  providerConfigRef:
+    name: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-cluster-helm-provider

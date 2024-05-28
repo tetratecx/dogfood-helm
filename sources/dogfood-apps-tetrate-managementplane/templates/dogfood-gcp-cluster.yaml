@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-cluster
+  labels:
+  {{- include "dogfood-apps-tetrate-managementplane.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook-weight": "-5"
+spec:
+  destination:
+    namespace: crossplane-system
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: dogfood-gcp-cluster
+    helm:
+      releaseName: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-cluster
+    repoURL: https://tetratecx.github.io/dogfood-helm

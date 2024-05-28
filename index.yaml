@@ -1,14 +1,25 @@
 apiVersion: v1
 entries:
+  dogfood-apps-tetrate-managementplane:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-05-28T08:56:45.86082-04:00"
+    description: A Helm chart for Kubernetes
+    digest: 8bc4af994cddd1b7d52928d7d82c91ba900b0f0eac3252fff2b7959a8c35f594
+    name: dogfood-apps-tetrate-managementplane
+    type: application
+    urls:
+    - https://tetratecx.github.io/dogfood-helm/dogfood-apps-tetrate-managementplane-0.1.0.tgz
+    version: 0.1.0
   dogfood-gcp-cluster:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2024-05-27T21:01:37.017493-04:00"
+    created: "2024-05-28T08:56:45.861219-04:00"
     description: A Helm chart for Kubernetes
     digest: a703febb14912cbb69ec45af4ef58fcbcf1cced7b252790a2e471c899cd9b5e8
     name: dogfood-gcp-cluster
     type: application
     urls:
-    - https://tetratecx.github.io/dogfood-helm/charts/dogfood-gcp-cluster-0.1.0.tgz
+    - https://tetratecx.github.io/dogfood-helm/dogfood-gcp-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-27T21:01:37.0167-04:00"
+generated: "2024-05-28T08:56:45.860173-04:00"
