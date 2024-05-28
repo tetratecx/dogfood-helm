@@ -15,7 +15,7 @@ spec:
     chart: dogfood-gcp-cluster
     helm:
       releaseName: {{ .Release.Name }}
-      targetRevision: {{ .Chart.AppVersion }}
+    targetRevision: {{ .Chart.AppVersion }}
     repoURL: https://tetratecx.github.io/dogfood-helm
   syncPolicy:
     automated:
