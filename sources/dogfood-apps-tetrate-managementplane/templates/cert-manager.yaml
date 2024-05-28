@@ -1,7 +1,7 @@
 apiVersion: helm.crossplane.io/v1beta1
 kind: Release
 metadata:
-  name: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-baseline-cert-manager
+  name: {{ .Release.Name }}-cert-manager
   labels:
   {{- include "dogfood-apps-tetrate-managementplane.labels" . | nindent 4 }}
   annotations:
@@ -14,4 +14,4 @@ spec:
       version: v1.14.5
     namespace: cert-manager
   providerConfigRef:
-    name: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-dogfood-gcp-cluster-connect-write
+    name: {{ .Release.Name }}-connect-write

@@ -14,5 +14,15 @@ spec:
   source:
     chart: dogfood-gcp-cluster
     helm:
-      releaseName: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}
+      releaseName: {{ .Release.Name }}
     repoURL: https://tetratecx.github.io/dogfood-helm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2

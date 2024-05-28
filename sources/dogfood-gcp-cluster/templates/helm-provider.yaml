@@ -1,14 +1,14 @@
 apiVersion: helm.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: {{ include "dogfood-gcp-cluster.fullname" . }}-helm-provider
+  name: {{ .Release.Name }}-helm-provider
   labels:
   {{- include "dogfood-gcp-cluster.labels" . | nindent 4 }}
 spec:
   credentials:
     secretRef:
       key: kubeconfig
-      name: {{ include "dogfood-gcp-cluster.fullname" . }}-kubeconfig-write
+      name: {{ .Release.Name }}-kubeconfig-write
       namespace: crossplane-system
     source: Secret
   identity:

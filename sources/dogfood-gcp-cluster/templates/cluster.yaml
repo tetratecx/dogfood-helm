@@ -1,7 +1,7 @@
 apiVersion: container.gcp.upbound.io/v1beta1
 kind: Cluster
 metadata:
-  name: {{ include "dogfood-gcp-cluster.fullname" . }}
+  name: {{ .Release.Name }}
   labels:
   {{- include "dogfood-gcp-cluster.labels" . | nindent 4 }}
 spec:
@@ -17,5 +17,5 @@ spec:
   providerConfigRef:
     name: gcp-provider-config
   writeConnectionSecretToRef:
-    name: {{ include "dogfood-gcp-cluster.fullname" . }}-connect-write
+    name: {{ .Release.Name }}-connect-write
     namespace: crossplane-system
