@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  dogfood-gcp-cluster:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-05-27T21:01:37.017493-04:00"
+    description: A Helm chart for Kubernetes
+    digest: a703febb14912cbb69ec45af4ef58fcbcf1cced7b252790a2e471c899cd9b5e8
+    name: dogfood-gcp-cluster
+    type: application
+    urls:
+    - https://tetratecx.github.io/dogfood-helm/charts/dogfood-gcp-cluster-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-05-27T21:01:37.0167-04:00"
