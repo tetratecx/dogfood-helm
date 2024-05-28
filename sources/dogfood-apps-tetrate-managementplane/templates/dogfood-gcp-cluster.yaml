@@ -14,5 +14,5 @@ spec:
   source:
     chart: dogfood-gcp-cluster
     helm:
-      releaseName: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}-cluster
+      releaseName: {{ include "dogfood-apps-tetrate-managementplane.fullname" . }}
     repoURL: https://tetratecx.github.io/dogfood-helm
