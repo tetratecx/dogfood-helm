@@ -21,7 +21,7 @@ jobs:
         run: |
           cd sources
           for dir in */ ; do
-            helm package "$dir" -d ../charts
+            helm package "$dir" -d ../docs
           done
           helm repo index ../docs --url https://tetratecx.github.io/dogfood-helm
           cd ..
