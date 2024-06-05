@@ -28,8 +28,9 @@ jobs:
 
       - name: Commit and Push changes
         run: |
+          git diff
           git config --global user.name 'github-actions'
-          git fi user.email 'github-actions@github.com'
+          git user.email 'github-actions@github.com'
           git add charts/* index.yaml
           git commit -m "Regenerate Helm charts and update index" || echo "No changes to commit"
           git push || echo "No changes to push"
