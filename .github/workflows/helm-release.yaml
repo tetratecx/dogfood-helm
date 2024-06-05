@@ -1,4 +1,4 @@
-name: Regenerate Helm Charts
+name: Helm Release
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - 'sources/**'
 
 jobs:
-  regenerate-and-update-helm-charts:
+  helm-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,5 +32,5 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add docs/*
-          git commit -m "Regenerate Helm charts and update index" || echo "No changes to commit"
+          git commit -m "Release Helm charts and update index" || echo "No changes to commit"
           git push || echo "No changes to push"
