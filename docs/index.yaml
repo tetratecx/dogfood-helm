@@ -1,11 +1,39 @@
 apiVersion: v1
 entries:
+  cert-manager:
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/prerelease: '{{IS_PRERELEASE}}'
+    apiVersion: v2
+    appVersion: v0.0.0
+    created: "2024-06-05T15:26:11.991737792Z"
+    description: A Helm chart for cert-manager
+    digest: aca09d4109d9464076a55e91d55b616e7abaecb92c4746e8cc8132ce9d4d42d6
+    home: https://cert-manager.io
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - cert-manager
+    - kube-lego
+    - letsencrypt
+    - tls
+    kubeVersion: '>= 1.22.0-0'
+    maintainers:
+    - email: cert-manager-maintainers@googlegroups.com
+      name: cert-manager-maintainers
+      url: https://cert-manager.io
+    name: cert-manager
+    sources:
+    - https://github.com/cert-manager/cert-manager
+    urls:
+    - https://tetratecx.github.io/dogfood-helm/cert-manager-v0.0.0.tgz
+    version: v0.0.0
   dogfood-apps-tetrate-managementplane:
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2024-06-05T15:16:50.699451952Z"
+    created: "2024-06-05T15:26:11.992005062Z"
     description: A Helm chart for Kubernetes
-    digest: 2611a64f7ee3e0bf025fbb8c4617b684d06039269402a83b71e02824a49bc3e9
+    digest: 8a982baea245895b381b72725eb7daa4f6c89387dc614cb9d7d3896dcdf510be
     name: dogfood-apps-tetrate-managementplane
     type: application
     urls:
@@ -13,7 +41,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2024-06-05T15:16:50.699302342Z"
+    created: "2024-06-05T15:26:11.99188644Z"
     description: A Helm chart for Kubernetes
     digest: 305179951229aa47bfd9307adddaebcbb1231d1e02e703cb8a0a8abd48930051
     name: dogfood-apps-tetrate-managementplane
@@ -24,9 +52,9 @@ entries:
   dogfood-gcp-cluster:
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2024-06-05T15:16:50.699759808Z"
+    created: "2024-06-05T15:26:11.992273104Z"
     description: A Helm chart for Kubernetes
-    digest: 13dbf63cb1c1527adffe8988439ae6f8522626bb28644d7065b3dcdc7b13593d
+    digest: 77959d2872f2b5b945b4439604db27d57f4c2eddb867d4c62acd876c5dc4432c
     name: dogfood-gcp-cluster
     type: application
     urls:
@@ -34,7 +62,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2024-06-05T15:16:50.699595601Z"
+    created: "2024-06-05T15:26:11.992139413Z"
     description: A Helm chart for Kubernetes
     digest: 9218defc64f2024558b989e9d13a200c74d45e304de8b83f86292844b77c7884
     name: dogfood-gcp-cluster
@@ -42,4 +70,4 @@ entries:
     urls:
     - https://tetratecx.github.io/dogfood-helm/dogfood-gcp-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-05T15:16:50.699046022Z"
+generated: "2024-06-05T15:26:11.989988487Z"
