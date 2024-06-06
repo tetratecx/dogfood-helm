@@ -1,0 +1,29 @@
+
+image:
+  guacd: guacamole/guacd
+  guacamole: guacamole/guacamole
+  tag: "1.5.5"
+
+storageClass: ""
+
+postgres:
+  image: postgres
+  tag: alpine3.20
+  db: ps_db
+  user: ps_user
+  password: SecurePassword
+  storageSize: 10Gi
+
+jumpbox:
+  image: as679/ssh-server
+  tag: latest
+  storageSize: 10Gi
+
+service:
+  type: ClusterIP
+  port: 8080
+
+gateway:
+  className: eg 
+  host: jumpbox.pnc-sandbox.azure.sandbox.tetrate.io
+

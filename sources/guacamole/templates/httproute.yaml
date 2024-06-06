@@ -1,0 +1,54 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned
+    cert-manager.io/common-name: "jumpbox"
+  name: jumpbox
+spec:
+  gatewayClassName: {{ .Values.gateway.className }}
+  listeners:
+  - name: https
+    protocol: HTTPS
+    hostname: {{ .Values.gateway.host }} 
+    port: 443
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: jumpbox-https
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jumpbox
+spec:
+  parentRefs:
+  - name: jumpbox
+    sectionName: https
+  hostnames:
+  - {{ .Values.gateway.host }} 
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: jumpbox 
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+  - filters:
+    - requestRedirect:
+        path:
+          replaceFullPath: /guacamole
+          type: ReplaceFullPath
+        statusCode: 302
+      type: RequestRedirect
+    matches:
+    - path:
+        type: Exact
+        value: /
+
+

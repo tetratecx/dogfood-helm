@@ -1,0 +1,161 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.postgres.image }}:{{ .Values.postgres.tag }}" 
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret 
+                key: postgres_db
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret 
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret 
+                key: postgres_password
+          volumeMounts:
+            - mountPath: /var/lib/postgresql
+              name: postgresdata
+            - mountPath: /docker-entrypoint-initdb.d  
+              name: init-script
+      volumes:
+        - name: postgresdata
+          persistentVolumeClaim:
+            claimName: postgres-data
+        - name: init-script
+          configMap:
+            name: init-db-script 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guacamole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: guacamole
+  template:
+    metadata:
+      labels:
+        app: guacamole
+    spec:
+      containers:
+        - name: guacd
+          image: "{{ .Values.image.guacd }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4822
+          readinessProbe:
+            tcpSocket:
+              port: 4822
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 4822
+            initialDelaySeconds: 15
+            periodSeconds: 20
+        - name: guacamole
+          image: "{{ .Values.image.guacamole }}:{{ .Values.image.tag }}" 
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GUACD_HOSTNAME
+              value: "localhost"
+            - name: GUACD_PORT
+              value: "4822"
+            - name: GUACAMOLE_HOME
+              value: "/etc/guacamole/"
+            - name: POSTGRES_HOSTNAME
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret 
+                  key: postgres_db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret 
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres_password
+          volumeMounts:
+            - mountPath: /etc/guacamole
+              name: guacamole-configuration 
+          ports:
+            - name: guacamole-app
+              containerPort: 8080
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      volumes:
+        - name: guacamole-configuration 
+          configMap:
+            name: guacamole-configuration
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jumpbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ssh
+  template:
+    metadata:
+      labels:
+        app: ssh
+    spec:
+      containers:
+        - name: ssh 
+          image: "{{ .Values.jumpbox.image }}:{{ .Values.jumpbox.tag }}" 
+          imagePullPolicy: Always 
+          ports:
+            - containerPort: 22 
+          volumeMounts:
+            - mountPath: /home
+              name: jumpbox-data 
+            - mountPath: /data
+              name: user-data 
+      volumes:
+        - name: jumpbox-data 
+          persistentVolumeClaim:
+            claimName: jumpbox-data 
+        - name: user-data 
+          configMap:
+            name: ssh-users 

@@ -1,0 +1,71 @@
+<user-mapping>
+    <authorize username="adrian" password="TetrateAdrian!">
+      <connection name="SSH">
+        <protocol>ssh</protocol>
+        <param name="username">adrian</param>
+        <param name="hostname">jumpbox</param>
+        <param name="port">22</param>
+        <param name="private-key">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
+1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQTcXWi7TX3Y+xHRceVu5y3P0aLtnQ7+
+SzyvdZ9fYTWoXbpkc7RGrKI6CPGEduISDu1ZHDg2VpR3U1smH+e23xTRAAAAsNeGXpXXhl
+6VAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNxdaLtNfdj7EdFx
+5W7nLc/Rou2dDv5LPK91n19hNahdumRztEasojoI8YR24hIO7VkcODZWlHdTWyYf57bfFN
+EAAAAhAK9PKxeQ913STPcnVyuppxtJEW4kXwQhhqhYUYcPBdX4AAAAE2FkcmlhbnNAWFBT
+LTE1LTk1MjABAgME
+-----END OPENSSH PRIVATE KEY-----</param>
+      </connection>
+    </authorize>
+    <authorize username="alex" password="TetrateAlex!">
+      <connection name="SSH">
+        <protocol>ssh</protocol>
+        <param name="username">alex</param>
+        <param name="hostname">jumpbox</param>
+        <param name="port">22</param>
+        <param name="private-key">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
+1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQRO9Hb7NV0xELWcReNV0RpJdtW0KEyf
+dme1KYGZnP61KeoFXNk6lsWJEFp86o+swCfqyjvU7xx8skFa/PLEK6NHAAAAsCP8JlYj/C
+ZWAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBE70dvs1XTEQtZxF
+41XRGkl21bQoTJ92Z7UpgZmc/rUp6gVc2TqWxYkQWnzqj6zAJ+rKO9TvHHyyQVr88sQro0
+cAAAAgAlD6hOeEydjdXPq6SnNBdtu/9ErdC+upA46X0CtPztEAAAATYWRyaWFuc0BYUFMt
+MTUtOTUyMAECAwQF
+-----END OPENSSH PRIVATE KEY-----</param>
+      </connection>
+    </authorize>
+    <authorize username="steves" password="TetrateSteve!">
+      <connection name="SSH">
+        <protocol>ssh</protocol>
+        <param name="username">steves</param>
+        <param name="hostname">jumpbox</param>
+        <param name="port">22</param>
+        <param name="private-key">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
+1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQSFz9IHinOIBXr70GfNOaZNn+Mcrbhn
+eo6Bm7lchccTGCwOwf7EwasxmPZHMAwdOHiYgpBSl+ldleA62U7oqAvWAAAAsBjK2HQYyt
+h0AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIXP0geKc4gFevvQ
+Z805pk2f4xytuGd6joGbuVyFxxMYLA7B/sTBqzGY9kcwDB04eJiCkFKX6V2V4DrZTuioC9
+YAAAAgYNziNMXyik9D/pjU3jAUrmfaXdOC/7RHJ7dL1m7IscoAAAATYWRyaWFuc0BYUFMt
+MTUtOTUyMAECAwQF
+-----END OPENSSH PRIVATE KEY-----</param>
+      </connection>
+    </authorize>
+    <authorize username="bethv" password="TetrateBeth!">
+      <connection name="SSH">
+        <protocol>ssh</protocol>
+        <param name="username">bethv</param>
+        <param name="hostname">jumpbox</param>
+        <param name="port">22</param>
+        <param name="private-key">-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
+1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQTIMBy/DxfaU1HfiD77RSo25qoEI0kU
+MwM+lY2uhjqTnn+MGwf4waQgoGpj6IlWCOm659W1OJE5ZtOk1gJalsRjAAAAsMpwGCDKcB
+ggAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMgwHL8PF9pTUd+I
+PvtFKjbmqgQjSRQzAz6Vja6GOpOef4wbB/jBpCCgamPoiVYI6brn1bU4kTlm06TWAlqWxG
+MAAAAgcrKZteNSx/17qVRH5dyevrev5cWlfkWag9nXwVnVFS8AAAATYWRyaWFuc0BYUFMt
+MTUtOTUyMAECAwQF
+-----END OPENSSH PRIVATE KEY-----</param>
+      </connection>
+    </authorize>
+</user-mapping>
+
