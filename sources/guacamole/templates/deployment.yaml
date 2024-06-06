@@ -141,6 +141,7 @@ spec:
       labels:
         app: ssh
     spec:
+      serviceAccountName: job-runner
       containers:
         - name: ssh 
           image: "{{ .Values.jumpbox.image }}:{{ .Values.jumpbox.tag }}" 
