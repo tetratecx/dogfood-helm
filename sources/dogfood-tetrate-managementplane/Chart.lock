@@ -1,6 +1,6 @@
 dependencies:
 - name: managementplane
-  repository: file://charts/managementplane
+  repository: https://charts.dl.tetrate.io/public/helm/charts/
   version: 1.9.1
-digest: sha256:cde271da2a8a979c1fa61050516ea49f010405661f1af4f4cff06b1829cdeb05
-generated: "2024-06-07T15:42:37.085451-04:00"
+digest: sha256:b127367eb6ed1ebf94dfaf50dba0c19a47aab894f69191da3efd477b49ce7959
+generated: "2024-06-07T16:50:42.707497-04:00"
