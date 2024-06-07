@@ -2,6 +2,9 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod-gcp
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "5"
 spec:
   acme:
     email: dogfood@tetrate.io
