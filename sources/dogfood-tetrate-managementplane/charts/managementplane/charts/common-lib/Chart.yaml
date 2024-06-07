@@ -1,0 +1,10 @@
+apiVersion: v2
+appVersion: 1.9.1
+description: A Helm chart for TSB common templates
+icon: https://docs.tetrate.io/img/tetrate-logo-black.png
+maintainers:
+- email: tetrate@tetrate.io
+  name: tetrate
+name: common-lib
+type: library
+version: 1.9.1

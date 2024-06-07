@@ -1,0 +1,6 @@
+dependencies:
+- name: managementplane
+  repository: file://charts/managementplane
+  version: 1.9.1
+digest: sha256:cde271da2a8a979c1fa61050516ea49f010405661f1af4f4cff06b1829cdeb05
+generated: "2024-06-07T15:42:37.085451-04:00"

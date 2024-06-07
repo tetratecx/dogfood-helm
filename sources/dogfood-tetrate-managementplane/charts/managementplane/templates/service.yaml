@@ -1,0 +1,26 @@
+{{- $operator := default dict .Values.operator }}
+{{- $service := default dict $operator.service }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: tsb-operator
+{{ include "common.management-plane.operatorLabels" . | indent 4 }}
+{{ include "common.labels" . | indent 4 }}
+{{- if $service.annotations }}
+  annotations:
+{{ toYaml $service.annotations | indent 4 }}
+{{- end }}
+  name: tsb-operator-management-plane
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  type: {{ default "ClusterIP" $service.type }}
+  ports:
+    - name: http-metrics
+      port: 8383
+      targetPort: 8383
+    - name: webhook
+      port: 443
+      targetPort: 9443
+  selector:
+    name: tsb-operator

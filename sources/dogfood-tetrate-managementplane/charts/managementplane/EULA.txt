@@ -1,0 +1,379 @@
+
+                              TETRATE IO INC. 
+                         END USER LICENSE AGREEMENT 
+ 
+
+IMPORTANT – READ CAREFULLY:  BY CLICKING ON THE "ACCEPT" BUTTON AND 
+DOWNLOADING, INSTALLING AND/OR USING THE SOFTWARE OR DOCUMENTATION OF TETRATE 
+IO INC. (“TETRATE”) AND PURCHASING THE TETRATE SUPPORT SERVICES PROGRAM, YOU (
+ON BEHALF OF YOURSELF OR AS AN AUTHORIZED REPRESENTATIVE ON BEHALF OF AN 
+ENTITY) AS THE "CUSTOMER" UNCONDITIONALLY AGREE TO ALL THE TERMS OF THIS EULA 
+AND SUPPORT SERVICES PROGRAM (collectively, "AGREEMENT") WITH TETRATE REGARDING 
+CUSTOMER'S USE OF THE SOFTWARE AND THE DOCUMENTATION AND SUPPORT SERVICES.  THE 
+EFFECTIVE DATE OF THIS AGREEMENT IS THE EARLIER OF THE DATE YOU DOWNLOAD OR USE 
+THE SOFTWARE. 
+
+1.  Definitions. 
+
+1.1  “Confidential Information” means the non-public information that is:  (a) 
+identified as confidential at the time of disclosure by the disclosing party (
+“Discloser”); or (b) disclosed under circumstances that would indicate to a 
+reasonable person that the information should be treated as confidential by the 
+party receiving such information (“Recipient”). 
+
+1.2  “Documentation” means the end user manuals, Software specifications, 
+other materials and all updates relating to the functionality or operation of 
+the Software provided with the Software or made available for down load for use 
+in conjunction with the Software and templates, reports or results of the 
+Services expressly excluding marketing and sales collateral and materials. 
+
+1.3  “Error” means a failure of the Software to conform substantially to the 
+Documentation at the time of delivery which is reproducible and otherwise 
+covered under the Support Services Program. 
+
+1.4  “Evaluation Period” means the period commencing on the date Software is 
+made available to Customer to download and ending 30 days thereafter. 
+
+1.5  “Fees” mean, collectively, the fees paid for the license to use the 
+Software in accordance with this Agreement and the applicable Documentation (
+“Subscription Fees”) for the term for which the applicable Subscription Fee has 
+been paid (“Subscription Term”) and all other fees for Services and Support. 
+
+1.6  “Software” means the Tetrate software and all updates, upgrades, 
+alterations, modifications and derivatives Tetrate makes available from time to 
+time during the Subscription Term excluding third party software and open 
+source software provided with the Software for which the applicable license 
+terms are available upon request (“Third Party Software”). 
+
+1.7  “Subscription License” means the right of use of the Software and 
+Documentation as set forth in Section 2.1 in a production environment, for the 
+payment of all Fees for the Subscription Term. 
+
+1.8  “Services” consist of installation, implementation, configuration services, 
+architectural review and such other services Tetrate makes available from time 
+to time as set forth in an order or statement of work signed by the parties and 
+governed by this Agreement. 
+
+1.9  “Support” mean technical support and maintenance provided by Tetrate to 
+the End User in accordance with and subject to the Tetrate Maintenance and 
+Support Terms, which are located here: https://tetr8.io/support-program 
+
+2.  License. 
+
+2.1  Subscription License to Software and Documentation.  During the 
+Subscription Term, subject to this Agreement and the payment of all Fees, 
+Tetrate grants Customer a limited, non-sublicensable, non-transferable (except 
+as expressly permitted), non-exclusive Subscription License to: (a) install the 
+Software in the quantity specified in the order on the server(s) under 
+Customer’s sole control; (b) reproduce one cold backup copy of the Software and 
+such reasonable number of copies of the Documentation to support Customer’s use 
+of the Software; and, (c) use the Software and Documentation  only for Customer 
+internal business purposes. Software is licensed only in object code. Customer 
+agrees to comply with the terms of the applicable licenses for the Third Party 
+Software. 
+
+2.2  Evaluation.  During the Evaluation Period, and notwithstanding any 
+provision in this Agreement to the contrary, Tetrate grants Customer a 
+personal, nonexclusive license to use the Software and Documentation, in 
+accordance with the Documentation and this Agreement, solely for internal 
+testing and evaluation purposes, in a non-production environment. If the 
+Software meet the agreed to goals, Customer will purchase a Subscription  
+License to the Software. Tetrate is not obligated to provide any Services 
+during the Evaluation Period. On expiration of the Evaluation Period unless 
+Customer purchase a Subscription License: (a) Customer will stop all use of the 
+Software and Documentation; and, (b) Remove and destroy all copies of the 
+Software from all installation sites. 
+
+2.3  Certain Restrictions.  Except as expressly and unambiguously permitted by 
+this Agreement, Customer will not, nor permit anyone else to, directly or 
+indirectly: (a) Use any feature, function or capability without first 
+purchasing the applicable license even if such feature, function or capability 
+is enabled without a key; (b) Copy, modify, encumber or distribute the Software 
+or Documentation; (c) Reverse engineer, disassemble, decompile or otherwise 
+attempt to discover the source code or structure, sequence and organization of 
+the Software (except where the foregoing is expressly permitted by applicable 
+local law, and then only to the extent so permitted) or create any derivative 
+works including, without limitation, customization, translation or 
+localization; (d) Sell, license, sublicense, rent, lease, lend, transfer or 
+otherwise provide access to Software or use the Software for timesharing or 
+service bureau purposes, or otherwise use the Software on behalf of any third 
+party (including as part of a managed service offering); (e) Remove or obscure 
+any proprietary notices on the Software or Documentation; (f) Use the Software 
+for performing comparisons or other “benchmarking” activities, either alone or 
+in connection with any hardware or software; (g) Publish or disclose to any 
+third party any technical features, performance or benchmark tests, or 
+comparative or competitive analyses relating to the Software except for 
+internal use or as may be authorized in writing by Tetrate; or, (h) Use the 
+Software, Third Party Software or Documentation for any purpose and in any 
+manner not expressly and unambiguously authorized herein (including, without 
+limitation, for any purpose competitive with Tetrate) and in accordance with 
+the applicable Third Party Software licenses. 
+
+2.4  The Software contains automated reporting routines that generate and 
+report to Tetrate metrics and statistics regarding the performance of the 
+Software, to report problems and issues with the Software and provide 
+information back to Tetrate pertaining to the Software (“Report”). Tetrate owns 
+all right, title and interest in and to any data and information it so 
+collects (and Customer hereby make all assignments necessary to accomplish such 
+ownership).  Customer may disable this functionality. 
+
+2.5  Acceptance and Support Services Program.  The Software and Documentation 
+are deemed accepted when made available for download. Services and Support are 
+accepted on performance. Errors are addressed by the Support Services Program 
+as Customer’s sole and exclusive remedy. 
+
+2.6  Services. Customer may purchase Services from time to time which may 
+include the use of templates and reports resulting from the Services or such 
+other deliverables set forth in the applicable statement of work. 
+
+3.  Proprietary Rights.  Software and Documentation are licensed to Customer 
+and not sold. As between the parties, title, ownership rights, and intellectual 
+property rights in and to the Software (including Third Party Software), 
+Documentation and Tetrate’s Confidential Information, in any form or format, 
+along with all modifications, alterations or derivatives and all copies, remain 
+exclusively in Tetrate and its licensors excluding Customer data provided by 
+the Customer for use in conjunction with the Services. All suggestions, input, 
+comments and feedback provided to Tetrate with respect to the Software, 
+Services, Documentation and Support are Tetrate’s property and deemed Tetrate’s 
+Confidential Information. Customer hereby assigns to Tetrate and its licensors 
+any interest Customer may have in the same. The Software, Third Party Software 
+and Documentation are protected by copyright and other intellectual property 
+laws and by international treaties. Tetrate owns all of its trademarks, service 
+marks and logos hereunder and no license to use any such trademarks is provided 
+hereunder. This Agreement does not grant Customer any rights not expressly 
+granted herein. 
+
+4.  Fees. 
+
+4.1  Payments.  All Fees (plus applicable taxes and duties) are due and payable 
+within 30 days of the date of the invoice in US Dollars, without set-off or 
+deduction and, once paid, are not refundable, except as expressly stated in 
+this Agreement.  Payment is not conditioned on the future availability of any 
+Software, feature or functionality. Undisputed amounts not received by Tetrate 
+timely accrue interest at a rate of one and one-half percent (1.5%) for each 
+month that the invoice is overdue, or the highest interest rate permitted by 
+applicable law, whichever is lower. Customer will notify Tetrate within 10 
+business days of the date of the invoice of any disputed invoiced amount or 
+such claim is waived. The parties will endeavor to resolve any dispute of 
+invoiced amount within 30 days; upon which resolution, Customer will remit all 
+amounts due and payable to  Tetrate or Tetrate will refund excess payment. 
+
+4.2  Audit.  During the Subscription Term and for three (3) years thereafter, 
+within 15 business days of Tetrate’s request, Customer will provide Tetrate 
+with all usage and other records and will permit Tetrate (or its 
+representative) to audit Customer’s records to confirm Customer compliance with 
+this Agreement. Customer will pay all unpaid Fees. If such underpayment is 
+greater than 5% of the Fees paid by Customer to Tetrate under this Agreememnt, 
+Customer will pay all reasonable expenses related to such audit upon receipt of 
+an invoice. 
+
+5.  Confidentiality. 
+ 
+5.1  Maintenance of Confidentiality.  Discloser retains all right, title and 
+interest to Discloser and its licensors’ Confidential Information. The parties 
+acknowledge that a violation of the Recipient’s obligations with respect to 
+Confidential Information may cause irreparable harm to the Discloser for which 
+a remedy at law would be inadequate.  Therefore, in addition to any and all 
+remedies available at law, Discloser will be entitled to seek an injunction or 
+other equitable remedies in all legal proceedings in the event of any 
+threatened or actual violation of any or all of the provisions hereof without 
+the need to post bond.Recipient will: (a) take reasonable measures to protect 
+the Discloser’s Confidential Information by using the same degree of care, but 
+no less than a reasonable degree of care, to prevent the unauthorized use, 
+dissemination or publication of the Confidential Information as the Recipient 
+uses to protect its own confidential information of a like nature;  (b) limit 
+disclosure to those of Recipient’s employees, contractors or other third 
+parties having a need to need to know and who have previously agreed in 
+writing, prior to receipt of Confidential Information to obligations similar to 
+the provisions hereof; (c) not copy, reverse engineer, disassemble, create any 
+works from, or decompile any prototypes, software or other tangible objects 
+which embody the Recipient's Confidential Information and/or which are provided 
+to the party hereunder; and (iv) comply with and obtain all U.S. export control 
+laws or regulations. Confidential Information will not be reproduced in any 
+form except as required to accomplish the purposes and intent of this 
+Agreement.  Any reproduction of Confidential Information will be the property 
+of Discloser and will contain any and all notices of confidentiality contained 
+on the original. 
+
+5.2  Exceptions.  The parties agree that the foregoing will not apply to any
+information that Recipient can evidence: (a) is or becomes publicly known and 
+made generally available through no improper action or inaction of Recipient; (
+b) is already in its possession or known by Recipient prior to disclosure; (c) 
+is independently developed by Recipient without use of or reference to any 
+Confidential Information; or (d) is rightfully disclosed to it by a third 
+party. Recipient may use Confidential Information: (i) as needed to assert 
+defenses or seek to enforce this Agreement; or, (ii) as reasonably required to 
+make disclosures required by law or court order provided that Recipient 
+notifies Discloser prior to disclosure (except to the extent limited or 
+prohibited by law) so Discloser can seek to protect, limit or quash any such 
+disclosure. 
+
+6.  Disclaimers. THE SOFTWARE, THIRD PARTY SOFTWARE, DOCUMENTATION,
+SERVICES AND SUPPORT ARE PROVIDED ON AN “AS IS” BASIS. TETRATE AND ITS 
+LICENSORS HEREBY DISCLAIM ALL WARRANTIES, REPRESENTATIONS AND CONDITIONS 
+REGARDING THE SOFTWARE, THIRD PARTY SOFTWARE, DOCUMENTATION, SERVICES AND 
+SUPPORT WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING THE IMPLIED WARRANTIES 
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, QUALITY AND NON-
+INFRINGEMENT. CUSTOMER ACKNOWLEDGES AND AGREES THAT TETRATE AND ITS LICENSORS 
+DO NOT WARRANT THAT THE SOFTWARE, THIRD PARTY SOFTWARE, DOCUMENTATION, SERVICES 
+AND SUPPORT WILL MEET CUSTOMER’S REQUIREMENTS, BE UNINTERRUPTED, TIMELY, SECURE 
+OR ERROR FREE OR MAKE ANY WARRANTY AS TO THE RESULTS WHICH MAY BE OBTAINED FROM 
+THE USE OF THE SOFTWARE,  THIRD PARTY SOFTWARE, DOCUMENTATION, SERVICES OR 
+SUPPORT. THE SOFTWARE, THIRD PARTY SOFTWARE AND DOCUMENTATION ARE NOT DESIGNED, 
+INTENDED, OR LICENSED FOR USE IN ANY AERONAUTICAL, NUCLEAR, MEDICAL, LIFE 
+SAVING OR LIFE SUSTAINING SYSTEMS, OR FOR ANY OTHER APPLICATION IN WHICH THE 
+USE OF WHICH COULD CREATE A SITUATION WHERE PERSONAL INJURY OR DEATH MAY OCCUR. 
+CUSTOMER IS RESPONSIBLE TO BACKUP ALL OF CUSTOMER’S DATA AND SYSTEMS. TETRATE 
+AND ITS LICENSORS ARE NOT RESPONSIBLE OR LIABLE FOR LOSS, CORRUPTION OR 
+DESTRUCTION OF DATA.  THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART 
+OF THIS AGREEMENT. 
+
+7.  Indemnity.  Tetrate agrees to defend or settle, at Tetrate’s option, a 
+third party claim or cause of action against Customer alleging that the 
+Software infringes or misappropriates a patent or copyright of such third 
+party (“Claim”) and to pay damages finally awarded against Customer or to pay 
+settlement amounts to the extent directly resulting from such Claim, provided 
+Tetrate is notified promptly of such Claim, is given sole control of the 
+defense and settlement of the Claim, Customer provide to Tetrate all reasonable 
+assistance and Customer is not in material breach of this Agreement. The 
+foregoing obligations do not apply to third party claims or causes of action 
+pertaining to an Evaluation or to any Software or portions or components 
+thereof: (a) which are Third Party Software; (b) not supplied by Tetrate; (c) 
+made in whole or in part in accordance with Customer’s specifications; (d) 
+modified other than by Tetrate; (e) if the alleged infringement results from 
+the use of the Software in combination with other products, processes or 
+materials but for such combination the Software would not infringe; (e) if 
+Customer continues infringing activity after being notified thereof or after 
+being informed of modifications that would have avoided the alleged 
+infringement and failure to use such modifications; or, (f) use of the Software 
+other than in strict conformity with this Agreement and the Documentation. For 
+all such exceptions, Customer will indemnify, defend and hold harmless Tetrate 
+and its officers, directors, employees, agents, successors and assigns against 
+all damages and liabilities including reasonable attorneys’ fees and costs. If 
+any Claim arises, Tetrate may, at its sole option and expense: (i) replace or 
+modify the affected Software to make it non-infringing with no less material 
+functionality; (ii) procure a license for Customer’s continued use of the 
+affected Software; or, (iii) require Customer stop using the affected Software, 
+terminate this Agreement and Customer’s rights hereunder. This Section 7 states 
+Tetrate and its licensors’ sole and exclusive obligations, and Customer’s sole 
+and exclusive remedies, with respect to any claims of infringement or 
+misappropriation of third party intellectual property rights of any kind. 
+
+8.  Limitation of Liability.  UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL
+THEORY, INCLUDING, BUT NOT LIMITED TO, TORT, CONTRACT, NEGLIGENCE, STRICT 
+LIABILITY OR OTHERWISE, WILL TETRATE OR ITS LICENSORS BE LIABLE TO CUSTOMER OR 
+ANY OTHER PERSON OR ENTITY FOR ANY OF THE FOLLOWING: (A) THIRD PARTY SOFTWARE; (
+B) ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER 
+INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOST PROFITS, LOSS OF GOODWILL, WORK 
+STOPPAGE, ACCURACY OF RESULTS, COMPUTER FAILURE OR MALFUNCTION, OR LOSS OR 
+CORRUPTION OF DATA OR THE COST OF PROCURING SUBSTITUTE SOFTWARE; OR (C) ANY 
+AMOUNT IN THE AGGREGATE IN EXCESS OF THE SUBSCRIPTION LICENSE FEES PAID FOR THE 
+SOFTWARE FROM WHICH THE CAUSE OF ACTION AROSE IN THE TWELVE (12) MONTHS 
+PRECEDING THE DATE THE CLAIM AROSE, OR, IF GREATER, $500.00. THE FOREGOING 
+LIMITATIONS APPLY EVEN IF TETRATE HAS BEEN INFORMED OF THE POSSIBILITY OF SUCH 
+DAMAGES. THESE LIMITATIONS ARE INDEPENDENT FROM ALL OTHER PROVISIONS OF THIS 
+POLICY AND APPLY NOTWITHSTANDING THE FAILURE OF ANY REMEDY PROVIDED HEREIN. 
+
+9.  Term and Termination. 
+ 
+9.1  This Agreement continues until the expiration or earlier termination of 
+the Subscription Period. Notwithstanding, a party may terminate this Agreement 
+if the other party materially breaches this Agreement and such breach is not 
+cured within 30 days (or 5 days in the case of non-payment) of the breaching 
+party’s receipt of written notice describing the breach. This Agreement 
+terminates automatically in the event (a) Customer breaches Section 2, 5 or 11 
+in addition to all other legal or equitable rights or remedies or (b) of 
+party’s insolvency, admission in writing that a party is unable to pay its 
+debts as they come due, an assignment for the benefit of creditors or a party 
+otherwise become subject to receivership, bankruptcy or insolvency proceedings. 
+
+9.2  Effect of Termination. Upon expiration or termination of this Agreement 
+for any reason, the license granted hereunder terminates and Customer will stop 
+using the Software and Documentation. Customer will destroy and remove from all 
+computers, hard drives, networks and other storage media all copies of the 
+Software and Documentation and will certify to Tetrate upon request. Sections 
+1, through 8, 9.2, 11 and 12 survive expiration or termination of this 
+Agreement for any reason. 
+
+10.  Government Use. The Software provided under this Agreement is commercial 
+computer software developed exclusively at private expense. Unless otherwise 
+set forth in this Agreement, use, duplication, and disclosure by civilian 
+agencies of the U.S. Government will not exceed those minimum rights set forth 
+in FAR 52.227-19(c) or successor regulations. Use, duplication, and disclosure 
+by U.S. Department of Defense agencies is subject solely to the software 
+license terms contained in this Agreement, as stated in DFARS 227.7202 or 
+successor regulations. U.S. Government rights will apply only to the specific 
+agency and program for which the Software is obtained. 
+
+11.  Compliance and Export Controls.   Customer will comply with all 
+applicable laws and regulations, including, without limitation: (a) all privacy 
+laws and regulations; (b) export laws and regulations, including the Export 
+Administration Regulations, of the Bureau of Industry and Security (“BIS”) of 
+the U.S. Department of Commerce and the economic sanctions administered by the 
+Office of Foreign Assets Control (“OFAC”), of the U.S. Department of the 
+Treasury and to obtain any necessary license or other authorization to export, 
+reexport, or transfer Proprietary Information or Tetrate’s Products (“Products”)
+. Without limiting the foregoing, Customer agree Customer will not, and will 
+not permit a third party, directly or indirectly, to export, re-export, divert, 
+provide, disclose or transfer Confidential Information or the Software to 
+Crimea, Cuba, Iran, North Korea, Sudan, or Syria, to the governments of these 
+countries, wherever located, to any person or entity identified on BIS’s Denied 
+Persons, Entity, or Unverified List or OFAC’s Specially Designated Nationals 
+List or List of Consolidated Sanctions as updated from time to time, to any end 
+user with knowledge or reason to know that the Software or Confidential 
+Information will be used for nuclear, chemical, or biological weapons 
+proliferation, or for missile-development purposes or to any person with 
+knowledge or reason to know that they will export, re-export, provide, or 
+transfer the Software or Confidential Information other than in compliance with 
+the foregoing restrictions, and (c) the U.S. Foreign Corrupt Practices Act, the 
+UK Bribery Act and all similar laws and regulations which prohibit offering any 
+inducement, whether money or goods or services, to any government official, 
+employee, candidate or party. 
+
+12.  General.  Violation of Section 2 or 5 may cause irreparable harm to a 
+party for which a remedy at law would be inadequate. Therefore, in addition to 
+any and all remedies available at law, a party is entitled to seek an 
+injunction or other equitable remedies in all legal proceedings in the event of 
+any threatened or actual violation thereof without the need to post bond. 
+Written notice is effective when delivered or rejected at the address a party 
+last notified the other party in writing. This Agreement, the Support Services 
+Program and statement of work signed by both parties, are the complete 
+agreement between the parties concerning the Software and Documentation, 
+Services and Support to the exclusion of any pre-printed or contrary terms of 
+any purchase order (or similar document), and supersedes all prior agreements 
+and representations between them. This Agreement may be amended either by a 
+writing executed by both parties. If any provision of this Agreement is held to 
+be unenforceable for any reason, such provision will be reformed only to the 
+extent necessary to make it enforceable. The failure of a party to act with 
+respect to a breach of this Agreement does not constitute a waiver and will not 
+limit such party’s rights with respect to such breach or any subsequent 
+breaches. Except as expressly stated, this Agreement is personal to Customer 
+and this Agreement and the Software and Documentation cannot be assigned or 
+transferred for any reason whatsoever, without Tetrate’s prior written consent, 
+and any action or conduct in violation of the foregoing will be void and 
+without effect. Tetrate expressly reserves the right to assign this Agreement 
+and to delegate any of its obligations hereunder to a successor in interest 
+agreeing to be bound to this Agreement. The parties are and will remain 
+independent contractors as to each other. At no time will either party be 
+deemed to be the agent or employee of the other.  This Agreement will be 
+governed by and construed under California law as such law applies to 
+agreements between California residents entered into and to be performed within 
+California, and The U.N. Convention on Contracts for the International Sale of 
+Goods will not apply. The controlling language of this Agreement is English and 
+all communications and proceedings will be conducted in English. If Customer 
+have received a translation into another language, it has been provided as a 
+convenience only. Unless waived by Tetrate in a particular instance, the sole 
+and exclusive jurisdiction and venue for actions arising under this Agreement 
+will be the State and Federal courts in Santa Clara County, California and each 
+party hereby consents to the jurisdiction of such courts for any such dispute.  
+The party prevailing in any dispute under this Agreement will be entitled to an 
+award of its costs and attorneys’ fees.  This Agreement may be executed in 
+multiple counterparts all of which taken together shall constitute one single 
+agreement between the parties. The signatories hereto represent that they are 
+duly authorized to sign this Agreement on behalf of their respective companies 
+and the electronic version of this Agreement is legally binding as if it were 
+the original.  Other than as expressly set out in this Agreement, this 
+Agreement does not create any rights for any person who is not a party to it 
+and no person who is not a party to this Agreement may enforce any of its terms 
+or rely on any exclusion or limitation contained in it. 
+

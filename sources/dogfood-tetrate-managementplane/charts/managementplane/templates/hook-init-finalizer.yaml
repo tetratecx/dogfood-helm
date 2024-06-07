@@ -1,0 +1,37 @@
+# This hook triggers finalizer based cleanup by deleting the operator's deployment.
+# NOTE: Currently deployment process of TSB operators consist of two parts.
+#  1. Is this Helm chart - it contains necessary objects line (ServiceAccounts, RBAC, etc.) for operator to start-up.
+#  2. Are objects located in operator's `manifests/init` directory. Those objects are applied during operator's startup.
+#  Objects in 2nd step are created before operator is ready to create its CR hence owner references could not be injected
+#  to relay on K8s garbage collection mechanism for cleanup. The cleanup of those resources are now part of operators finalizer
+#  added to operator's deployment. We need to trigger finalizer process before helm uninstall (`pre-delete` hook) because
+#  resources managed by this Helm (ServiceAccounts, RBACs) are needed by finalizer to do the cleanup.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "hook-init-finalizer"
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "hook-init-finalizer"
+      labels:
+{{ include "common.labels" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: tsb-operator-management-plane
+      containers:
+        - name: hook-init-finalizer
+          image: "{{ required "image.registry" .Values.image.registry }}/kubectl:v1.22.9-tetrate-v9"
+          command:
+          - "sh"
+          - "-c"
+          - |
+            set -x;
+            kubectl delete deployments.apps tsb-operator-management-plane --namespace {{ .Release.Namespace }} --ignore-not-found

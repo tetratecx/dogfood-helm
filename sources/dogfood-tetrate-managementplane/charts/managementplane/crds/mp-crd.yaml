@@ -1,0 +1,53 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: managementplanes.install.tetrate.io
+  labels:
+    platform.tsb.tetrate.io/component: init
+    platform.tsb.tetrate.io/plane: management
+spec:
+  group: install.tetrate.io
+  names:
+    kind: ManagementPlane
+    listKind: ManagementPlaneList
+    plural: managementplanes
+    shortNames:
+      - management
+    singular: managementplane
+  scope: Namespaced
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          description:
+            "APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values.
+            More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#resources"
+          type: string
+        kind:
+          description:
+            "Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase.
+            More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#types-kinds"
+          type: string
+        spec:
+          description:
+            "Specification of the desired state of the tsb management plane resource.
+            More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status"
+          type: object
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          x-kubernetes-preserve-unknown-fields: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

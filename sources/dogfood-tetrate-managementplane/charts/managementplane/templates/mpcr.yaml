@@ -1,0 +1,15 @@
+{{- if .Values.spec }}
+apiVersion: install.tetrate.io/v1alpha1
+kind: ManagementPlane
+metadata:
+  name: {{ default "managementplane" .Values.managementPlaneName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+spec:
+{{ .Values.spec | toYaml | indent 2}}
+{{- if not .Values.spec.hub }}
+  # If the hub isn't specified, use the image registry value used for the operator deployment that is required
+  hub: {{ .Values.image.registry }}
+{{- end }}
+{{- end }}
