@@ -141,7 +141,7 @@ spec:
       labels:
         app: ssh
     spec:
-      serviceAccountName: job-runner
+      serviceAccountName: cron-job-runner
       containers:
         - name: ssh 
           image: "{{ .Values.jumpbox.image }}:{{ .Values.jumpbox.tag }}" 
