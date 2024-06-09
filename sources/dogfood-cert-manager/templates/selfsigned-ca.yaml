@@ -3,10 +3,9 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: selfsigned
-  namespace: cert-manager
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "-100"
+    "helm.sh/hook-weight": "80"
 spec:
   selfSigned: {}
 ---
@@ -14,10 +13,9 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: selfsigned-ca
-  namespace: cert-manager
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "-90"
+    "helm.sh/hook-weight": "90"
 spec:
   isCA: true
   duration: 21600h # 900d
@@ -37,7 +35,7 @@ metadata:
   name: selfsigned-ca
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "-80"
+    "helm.sh/hook-weight": "100"
 spec:
   ca:
     secretName: selfsigned-ca
