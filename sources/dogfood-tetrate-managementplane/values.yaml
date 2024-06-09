@@ -14,7 +14,7 @@ tetrate-managementplane:
         kubeSpec:
           service:
             annotations:
-              external-dns.alpha.kubernetes.io/hostname: {{ .Values.name }}
+              external-dns.alpha.kubernetes.io/hostname: {{ .Values.commonName }}
         port: 443
     hub: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
     organization: tetrate
