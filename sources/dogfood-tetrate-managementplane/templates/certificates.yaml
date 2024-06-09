@@ -7,7 +7,7 @@ metadata:
 spec:
   duration: 2160h
   isCA: false
-  ClusterIssuerRef:
+  issuerRef:
     name: "{{ .Values.certificates.issuer }}"
   renewBefore: 720h
   secretName: tsb-certs
@@ -25,7 +25,7 @@ metadata:
 spec:
   duration: 2160h
   isCA: false
-  ClusterIssuerRef:
+  issuerRef:
     name: "{{ .Values.certificates.issuer }}"
   renewBefore: 720h
   secretName: xcp-central-cert
