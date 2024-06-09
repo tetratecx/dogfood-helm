@@ -1,0 +1,36 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tsb-certs
+  namespace: tsb
+spec:
+  duration: 2160h
+  isCA: false
+  ClusterIssuerRef:
+    name: {{ .Values.certificates.issuer }}
+  renewBefore: 720h
+  secretName: tsb-certs
+  commonName: '{{ .Values.commonName }}'
+  dnsNames:
+    '{{ .Values.commonName }}'
+  usages:
+  - server auth
+--- 
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: xcp-central-cert
+  namespace: tsb
+spec:
+  duration: 2160h
+  isCA: false
+  ClusterIssuerRef:
+    name: {{ .Values.certificates.issuer }}
+  renewBefore: 720h
+  secretName: xcp-central-cert
+  commonName: '{{ .Values.commonName }}'
+  dnsNames:
+    '{{ .Values.commonName }}'
+  usages:
+  - server auth

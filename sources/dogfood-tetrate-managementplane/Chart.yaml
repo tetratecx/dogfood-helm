@@ -25,5 +25,6 @@ appVersion: "1.9.1"
 
 dependencies:
   - name: managementplane
+    alias: tetrate-managementplane
     version: 1.9.1
     repository: "https://charts.dl.tetrate.io/public/helm/charts/"
