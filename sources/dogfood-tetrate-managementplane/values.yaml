@@ -9,8 +9,25 @@ tetrate-managementplane:
     certIssuer:
       clusterIntermediateCAs: {}
       selfSigned: {}
+    hub: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
+    organization: tetrate
+    internalCertProvider:
+      certManager:
+        managed: EXTERNAL
+    enableWasmDownloadProxy: true 
     components:
       frontEnvoy:
         port: 443
-    hub: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
-    organization: tetrate
+      oap:
+        streamingLogEnabled: true
+      webUI:
+        kubeSpec:
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: web
+            patches:
+            - path: spec.template.spec.containers.[name:web].env[-1]
+              value:
+                name: SESSION_AGE_IN_MINUTES
+                value: "60"
