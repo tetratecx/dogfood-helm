@@ -12,6 +12,7 @@ spec:
   isCA: false
   issuerRef:
     name: "{{ .Values.certificates.issuer }}"
+    kind: ClusterIssuer
   renewBefore: 720h
   secretName: tsb-certs
   commonName: "{{ .Values.commonName }}"
@@ -33,6 +34,7 @@ spec:
   isCA: false
   issuerRef:
     name: "{{ .Values.certificates.issuer }}"
+    kind: ClusterIssuer
   renewBefore: 720h
   secretName: xcp-central-cert
   commonName: "{{ .Values.commonName }}"
