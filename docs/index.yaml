@@ -3,7 +3,7 @@ entries:
   dogfood-apps-tetrate-managementplane:
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2024-06-10T20:52:53.251869338Z"
+    created: "2024-06-10T20:53:09.55540567Z"
     description: A Helm chart for Kubernetes
     digest: 33da8be85f841275b3533a115e24951bdcbb70c68af9074a7367feff43a2fbfc
     name: dogfood-apps-tetrate-managementplane
@@ -13,7 +13,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2024-06-10T20:52:53.25173679Z"
+    created: "2024-06-10T20:53:09.555273043Z"
     description: A Helm chart for Kubernetes
     digest: 305179951229aa47bfd9307adddaebcbb1231d1e02e703cb8a0a8abd48930051
     name: dogfood-apps-tetrate-managementplane
@@ -24,14 +24,14 @@ entries:
   dogfood-cert-manager:
   - apiVersion: v2
     appVersion: 1.14.6
-    created: "2024-06-10T20:52:53.256248811Z"
+    created: "2024-06-10T20:53:09.559255465Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
       repository: https://charts.jetstack.io
       version: 1.14.6
     description: A Helm chart for Kubernetes
-    digest: c69c1d002497656ed7508512367077fd48fa5c4efc15250affa402f0b9119370
+    digest: d2cca38a310884f587ed8c853aa381ad3248eca1ef4212d06f77324da594489b
     name: dogfood-cert-manager
     type: application
     urls:
@@ -40,7 +40,7 @@ entries:
   dogfood-gcp-cluster:
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2024-06-10T20:52:53.256610439Z"
+    created: "2024-06-10T20:53:09.559550905Z"
     description: A Helm chart for Kubernetes
     digest: 3c28ce5b5fef4e02c71b2e2fc14ad22131cde9bbd6a24219c5067102e75088e0
     name: dogfood-gcp-cluster
@@ -50,7 +50,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2024-06-10T20:52:53.256416154Z"
+    created: "2024-06-10T20:53:09.559406256Z"
     description: A Helm chart for Kubernetes
     digest: 9218defc64f2024558b989e9d13a200c74d45e304de8b83f86292844b77c7884
     name: dogfood-gcp-cluster
@@ -61,7 +61,7 @@ entries:
   dogfood-tetrate-managementplane:
   - apiVersion: v2
     appVersion: 1.9.1
-    created: "2024-06-10T20:52:53.258905932Z"
+    created: "2024-06-10T20:53:09.561688565Z"
     dependencies:
     - alias: tetrate-managementplane
       name: managementplane
@@ -76,14 +76,14 @@ entries:
     version: 1.9.1
   - apiVersion: v2
     appVersion: 1.9.1-post1
-    created: "2024-06-10T20:52:53.257728515Z"
+    created: "2024-06-10T20:53:09.560651965Z"
     dependencies:
     - alias: tetrate-managementplane
       name: managementplane
       repository: https://charts.dl.tetrate.io/public/helm/charts/
       version: 1.9.1
     description: A Helm chart for Kubernetes
-    digest: c1429cefddc695da21e70469c858f9f66f8315dc9620e3bf78ed4b0ed591f179
+    digest: 5f2a0c8d492cf80c1c1361a40d87ed141c4a2f13463f492b581c03b208b5f930
     name: dogfood-tetrate-managementplane
     type: application
     urls:
@@ -92,7 +92,17 @@ entries:
   guacamole:
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2024-06-10T20:52:53.260727737Z"
+    created: "2024-06-10T20:53:09.563130169Z"
+    description: A Helm chart for Kubernetes
+    digest: 44fa4824cbdfbd3005e8de5e59c87b2c1c970b8c24d7d3836c3791ad657b8093
+    name: guacamole
+    type: application
+    urls:
+    - https://tetratecx.github.io/dogfood-helm/guacamole-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.5.5
+    created: "2024-06-10T20:53:09.562777032Z"
     description: A Helm chart for Kubernetes
     digest: 4424587632829cdc6afaabc888a339ff212cba8d9ca9177fefd537a2514e8245
     name: guacamole
@@ -102,7 +112,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2024-06-10T20:52:53.26035606Z"
+    created: "2024-06-10T20:53:09.562387817Z"
     description: A Helm chart for Kubernetes
     digest: ba315afb604b62caa349899832bf13be786112548a107194ca2a66a800d93584
     name: guacamole
@@ -112,7 +122,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2024-06-10T20:52:53.25959273Z"
+    created: "2024-06-10T20:53:09.562045389Z"
     description: A Helm chart for Kubernetes
     digest: 0d4641c8899047cbe7a9091eae9d94f00d5348772d68a17bb5fe00aecb1f3c7f
     name: guacamole
@@ -120,4 +130,4 @@ entries:
     urls:
     - https://tetratecx.github.io/dogfood-helm/guacamole-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-10T20:52:53.25147024Z"
+generated: "2024-06-10T20:53:09.555013711Z"
