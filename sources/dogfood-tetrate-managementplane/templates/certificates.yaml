@@ -4,6 +4,9 @@ kind: Certificate
 metadata:
   name: tsb-certs
   namespace: tsb
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "100"
 spec:
   duration: 2160h
   isCA: false
@@ -22,6 +25,9 @@ kind: Certificate
 metadata:
   name: xcp-central-cert
   namespace: tsb
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "200"
 spec:
   duration: 2160h
   isCA: false
