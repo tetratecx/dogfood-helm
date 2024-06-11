@@ -1,7 +1,7 @@
 commonName: ""
 certificates:
   issuer: "letsencrypt-prod-gcp"
-tetrate-managementplane:
+tetrateManagementPlane:
   image:
     registry: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
     tag: 1.9.1
