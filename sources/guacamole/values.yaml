@@ -27,3 +27,10 @@ gateway:
   className: eg 
   host: jumpbox.pnc-sandbox.azure.sandbox.tetrate.io
 
+users:
+  - username: adrian
+    password: test_password
+  - username: alex
+    password: test_password
+  - username: sergey
+    password: test_password

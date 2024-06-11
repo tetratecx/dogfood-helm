@@ -47,6 +47,27 @@ spec:
           configMap:
             name: init-db-script 
 ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: user-builder
+spec:
+  template:
+    spec:
+      serviceAccountName: cron-job-runner
+      containers:
+      - name: user-builder
+        image: as679/user-runner:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /data
+            name: users
+      restartPolicy: Never
+      volumes:
+        - name: users
+          configMap:
+            name: users
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -125,7 +146,7 @@ spec:
       volumes:
         - name: guacamole-configuration 
           configMap:
-            name: guacamole-configuration
+            name: guacamole-config
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -152,11 +173,11 @@ spec:
             - mountPath: /home
               name: jumpbox-data 
             - mountPath: /data
-              name: user-data 
+              name: guacamole-configuration
       volumes:
         - name: jumpbox-data 
           persistentVolumeClaim:
             claimName: jumpbox-data 
-        - name: user-data 
+        - name: guacamole-configuration
           configMap:
-            name: ssh-users 
+            name: guacamole-config

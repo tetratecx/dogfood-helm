@@ -10,17 +10,9 @@ data:
 apiVersion: v1
 kind: ConfigMap 
 metadata:
-  name: guacamole-configuration 
-  labels:
-    app: postgres
-data:
-{{ (.Files.Glob "foo/*.xml").AsConfig | indent 2 }}
----
-apiVersion: v1
-kind: ConfigMap 
-metadata:
-  name: ssh-users
+  name: users
   labels:
     app: ssh
 data:
-{{ (.Files.Glob "foo/*.ssh").AsConfig | indent 2 }}
+  user-list-yaml: |
+{{ .Values.users | toYaml | indent 4 }}
