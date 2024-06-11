@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dogfood-connection-details
+type: Opaque
+data:
+  organization: "{{ .Values.tetrateManagementPlane.spec.organization | b64enc }}"
+  adminPassword: "{{ .Values.tetrateManagementPlane.secrets.tsb.adminPassword | b64enc }}"
