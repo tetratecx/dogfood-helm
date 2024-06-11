@@ -1,4 +1,4 @@
-jetstack-cert-manager:
+jetstackCertManager:
   namespace: cert-manager
   installCRDs: true
   featureGates: "ExperimentalCertificateSigningRequestControllers=true"
