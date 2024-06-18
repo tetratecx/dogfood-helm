@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backstage
-          image: dogfood-backstage:latest
+          image: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dogfood-backstage:latest
           imagePullPolicy: Always
           ports:
             - name: http
