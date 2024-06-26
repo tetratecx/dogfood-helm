@@ -16,8 +16,8 @@ spec:
     - dns01:
         cloudDNS:
           project: dogfood-cx
-          {{ if .Values.letsencrypt.serviceAccountSecretRef.name }}
-          serviceAccountSecretRef:                                                                                                                                                                         │
-            key: {{ .Values.letsencrypt.serviceAccountSecretRef.name }}                                                                                                                                                                                      │
-            name: {{ .Values.letsencrypt.serviceAccountSecretRef.key }}
-          {{ end }}
+          {{- if .Values.letsencrypt.serviceAccountSecretRef.name }}
+          serviceAccountSecretRef:
+            key: {{ .Values.letsencrypt.serviceAccountSecretRef.key }}
+            name: {{ .Values.letsencrypt.serviceAccountSecretRef.name }}
+          {{- end }}
