@@ -3,6 +3,6 @@ jetstack-cert-manager:
   installCRDs: true
   featureGates: "ExperimentalCertificateSigningRequestControllers=true,ExperimentalGatewayAPISupport=true"
 letsencrypt:
-  serviceAccountSecretRef:                                                                                                                                                                         │
-    key: ""                                                                                                                                                                                     │
+  serviceAccountSecretRef:
+    key: ""
     name: ""
