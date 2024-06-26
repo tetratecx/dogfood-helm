@@ -2,4 +2,3 @@ jetstack-cert-manager:
   namespace: cert-manager
   installCRDs: true
   featureGates: "ExperimentalCertificateSigningRequestControllers=true,ExperimentalGatewayAPISupport=true"
-  extraArgs: "{--enable-gateway-api}"
