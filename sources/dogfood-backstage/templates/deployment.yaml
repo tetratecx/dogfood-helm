@@ -2,34 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dogfood-backstage
+  name: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dogfood-backstage
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: dogfood-backstage
+        app: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ .Release.Name }}-sa
       containers:
-        - name: backstage
-          image: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dogfood-backstage:latest
-          imagePullPolicy: Always
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}" # :{{ .Values.image.tag | default "latest" }}""
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:
             - name: http
               containerPort: 7007
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: dogfood-backstage
-  namespace: dogfood-backstage
-spec:
-  selector:
-    app: dogfood-backstage
-  ports:
-    - name: http
-      port: 80
-      targetPort: http
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-secret
