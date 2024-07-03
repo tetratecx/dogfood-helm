@@ -5,7 +5,7 @@
 image:
   repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dogfood-backstage
   tag: latest
-  pullPolicy: IfNotPresent 
+  pullPolicy: Always 
 
 secrets:
-  GITHUB_TOKEN: "token"
+  GITHUB_TOKEN: "token1233"
