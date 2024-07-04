@@ -1,3 +1,11 @@
 # Default values for dogfood-backstage.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+image:
+  repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dogfood-backstage
+  tag: latest
+  pullPolicy: Always 
+
+secrets:
+  GITHUB_TOKEN: "token1233"
