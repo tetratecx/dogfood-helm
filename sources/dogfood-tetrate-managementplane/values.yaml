@@ -11,11 +11,11 @@ tetrateManagementPlane:
       selfSigned: {}
     hub: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
     organization: tetrate
-    internalCertProvider:
-      certManager:
-        managed: EXTERNAL
     enableWasmDownloadProxy: true 
     components:
+      internalCertProvider:
+        certManager:
+          managed: EXTERNAL
       frontEnvoy:
         port: 443
       oap:
