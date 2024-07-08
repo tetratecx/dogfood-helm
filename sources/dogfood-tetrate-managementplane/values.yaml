@@ -13,6 +13,10 @@ tetrateManagementPlane:
     organization: tetrate
     enableWasmDownloadProxy: true 
     components:
+      gitops:
+        enabled: true
+        reconcileInterval: 600s
+        pushMode: ASYNC
       internalCertProvider:
         certManager:
           managed: EXTERNAL
