@@ -48,6 +48,7 @@ rules:
   - dogfood.tetrate.io
   resources:
   - controlplanes
+  - managementplanes
   verbs:
   - get
   - list
