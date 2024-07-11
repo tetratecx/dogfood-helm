@@ -1,6 +1,9 @@
 commonName: ""
 certificates:
-  issuer: "letsencrypt-prod-gcp"
+  tsb:
+    issuer: "selfsigned-ca"
+  xcp:
+    issuer: "selfsigned-ca"
 tetrateManagementPlane:
   image:
     registry: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
