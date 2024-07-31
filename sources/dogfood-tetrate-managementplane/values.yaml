@@ -22,7 +22,7 @@ tetrateManagementPlane:
         pushMode: ASYNC
       internalCertProvider:
         certManager:
-          managed: EXTERNAL
+          managed: AUTO
       frontEnvoy:
         port: 443
       oap:
