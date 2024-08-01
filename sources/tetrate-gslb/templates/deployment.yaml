@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tetrate-gslb.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  progressDeadlineSeconds: 600
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      {{- include "tetrate-gslb.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tetrate-gslb.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - args:
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address=127.0.0.1:8080
+        - --leader-elect
+        - --config-file-path=/etc/config/config.yaml
+        command:
+        - /manager
+        env:
+        - name: TETRATE_GSLB_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+          readOnly: true
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: manager
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /readyz
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+        {{- toYaml .Values.resources | nindent 10 }}
+        {{- if .Values.containerSecurityContext.enabled }}
+        securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 10 }}
+        {{- end }}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: {{ .Values.customDNS.policy }}
+      {{- if .Values.customDNS.enabled }}
+      dnsConfig: {{ .Values.customDNS.config }}
+      {{- end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      serviceAccount: {{ include "tetrate-gslb.serviceAccountName" . }}
+      serviceAccountName: {{ include "tetrate-gslb.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ include "tetrate-gslb.fullname" . }}-config
