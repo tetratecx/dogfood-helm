@@ -1,2 +1,0 @@
-This helm chart will install 3 deployments along with some of the resources required for resillience and networking perspective.
-These 3 deployments are tetrate-dns-controller, external-dns-local and external-dns-global respectively.
