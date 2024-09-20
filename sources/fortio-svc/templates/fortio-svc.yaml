@@ -1,0 +1,71 @@
+{{- if not (lookup "v1" "ServiceAccount" .Release.Namespace .Values.svcName) }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: {{ .Values.svcName }}
+  name: {{ .Values.svcName }}
+{{- end}}
+---
+{{- if not (lookup "v1" "Service" .Release.Namespace .Values.svcName) }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.svcName }}
+    service: {{ .Values.svcName }}
+  name: {{ .Values.svcName }}
+spec:
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: {{ .Values.svcName }}
+{{- end}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.svcName }}
+    version: {{ .Values.svcVersion }}
+  name: {{ .Values.svcName }}-{{ .Values.svcVersion }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.svcName }}
+      version: {{ .Values.svcVersion }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.svcName }}
+        version: {{ .Values.svcVersion }}
+    spec:
+      serviceAccountName: {{ .Values.svcName }}
+      containers:
+        - name: fortio
+          image: fortio/fortio:latest_release
+          args:
+            - load
+            - -c
+            - "1"
+            - -qps
+            - "{{ .Values.fortioQps }}"
+            - -t
+            - "0"
+            - -H
+            - "X-B3-Sampled: 1"
+            - -loglevel
+            - "debug"
+            - {{ .Values.targetURL }}
+          ports:
+            - containerPort: 8080  # Expose port 8080 from the container
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          env:
+            - name: FORTIO_UI_PORT
+              value: "8080"         # Exposes Fortio UI
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
