@@ -1,0 +1,62 @@
+jupyterhub:
+  hub:
+    config:
+      Authenticator:
+        allow_all: true
+        auto_login: true
+      GoogleOAuthenticator:
+        client_id: set_me 
+        client_secret: set_me 
+        oauth_callback_url: https://jupyter.tag.azure.sandbox.tetrate.io/hub/oauth_callback
+        hosted_domain:
+        - tetrate.io
+        login_service: TFC
+      JupyterHub:
+        authenticator_class: google
+      KubeSpawner:
+        http_timeout: 90
+  proxy:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: jupyter.tag.azure.sandbox.tetrate.io
+        external-dns.alpha.kubernetes.io/ttl: "10"
+    https:
+      enabled: true
+      hosts:
+      - jupyter.tag.azure.sandbox.tetrate.io
+      letsencrypt:
+        contactEmail: admin@tetrate.io
+  prePuller:
+    hook:
+      enabled: true
+  singleuser:
+    image:
+      name: as679/jupyter
+      tag: debugbootstrap
+    serviceAccountName: jupyter-admin 
+    allowPrivilegeEscalation: true
+    extraEnv:
+      GRANT_SUDO: "yes"
+    uid: 0
+    cmd: null
+    networkPolicy:
+      enabled: true
+      egress:
+      - ports:
+        - port: 53
+          protocol: UDP
+      - ports:
+        - port: 80
+          protocol: TCP
+      - ports:
+        - port: 443
+          protocol: TCP
+    lifecycleHooks:
+      postStart:
+        exec:
+          command:
+          - "sh"
+          - "-c"
+          - >
+            /opt/conda/bin/gitpuller https://github.com/tetratecx/pnc-onsite.git main pnc-onsite || true;
+

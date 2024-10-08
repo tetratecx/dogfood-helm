@@ -1,0 +1,11 @@
+# Chart.yaml
+apiVersion: v2
+name: dogfood-jupyter
+description: Jupyterhub for Dogfood
+type: application
+version: 0.0.1
+appVersion: "3.3.8"
+dependencies:
+- name: jupyterhub
+  version: "3.3.8"
+  repository: "https://hub.jupyter.org/helm-chart/"
