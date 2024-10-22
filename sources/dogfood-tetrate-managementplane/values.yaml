@@ -38,3 +38,5 @@ tetrateManagementPlane:
               value:
                 name: SESSION_AGE_IN_MINUTES
                 value: "60"
+  operator:
+    deletionProtection: disabled
