@@ -7,7 +7,7 @@ certificates:
 tetrateManagementPlane:
   image:
     registry: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
-    tag: 1.10.2
+    tag: 1.10.3
   spec:
     certIssuer:
       clusterIntermediateCAs: {}
