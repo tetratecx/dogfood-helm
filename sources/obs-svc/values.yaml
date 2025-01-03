@@ -4,6 +4,7 @@
 
 svcName: gcs
 svcVersion: v1
+svcZipkin: http://zipkin.istio-system.svc.cluster.local:9411/api/v2/spans
 
 replicaCount: 1
 

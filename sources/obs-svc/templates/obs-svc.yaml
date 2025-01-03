@@ -53,7 +53,7 @@ spec:
         - --ep-duration=0
         - --ep-errors=0
         - --ep-headers=0
-        - --zipkin-reporter-endpoint=http://zipkin.istio-system.svc.cluster.local:9411/api/v2/spans
+        - --zipkin-reporter-endpoint={{.Values.svcZipkin}}
         - --zipkin-sample-rate=1.0
         - --zipkin-singlehost-spans
         env:
