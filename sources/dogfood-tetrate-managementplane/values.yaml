@@ -18,7 +18,7 @@ tetrateManagementPlane:
     components:
       gitops:
         enabled: true
-        reconcileInterval: 900s
+        reconcileInterval: 600s
         pushMode: ASYNC
       internalCertProvider:
         certManager:
