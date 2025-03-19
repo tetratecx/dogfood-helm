@@ -26,6 +26,7 @@ tetrateManagementPlane:
       frontEnvoy:
         port: 443
       oap:
+        spmAgentReceiverEnabled: true
         streamingLogEnabled: true
       webUI:
         kubeSpec:
