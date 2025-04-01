@@ -3,9 +3,9 @@ entries:
   dogfood-backstage:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-04-01T13:57:50.962854438Z"
+    created: "2025-04-01T15:30:31.443682352Z"
     description: A Helm chart for Kubernetes
-    digest: d2ad3f5669385575c093b2853447e03a765a13692e420e8b174be5d93d4dc4e5
+    digest: 0cde59fe6c4e8fc743b26f10e4ea328ba3368279d8a860882996151dc6985856
     name: dogfood-backstage
     type: application
     urls:
@@ -13,7 +13,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2025-04-01T13:57:50.962681595Z"
+    created: "2025-04-01T15:30:31.44348751Z"
     description: A Helm chart for Kubernetes
     digest: a5cbcdefc740e991a227cdfbd9067e8df3c3c86588c23b0a1eae4b9896a8fa1c
     name: dogfood-backstage
@@ -23,8 +23,23 @@ entries:
     version: 0.1.0
   dogfood-cert-manager:
   - apiVersion: v2
+    appVersion: 1.17.1
+    created: "2025-04-01T15:30:31.484357865Z"
+    dependencies:
+    - alias: jetstack-cert-manager
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.17.1
+    description: A Helm chart for Kubernetes
+    digest: 7d68d5dfbaf62c7b83a8ea7a8afdd601f41aa441f4a903fb72302c62c89fd3b9
+    name: dogfood-cert-manager
+    type: application
+    urls:
+    - https://tetratecx.github.io/dogfood-helm/dogfood-cert-manager-1.17.1.tgz
+    version: 1.17.1
+  - apiVersion: v2
     appVersion: 1.16.3
-    created: "2025-04-01T13:57:50.997726232Z"
+    created: "2025-04-01T15:30:31.479284175Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -39,7 +54,7 @@ entries:
     version: 1.16.3
   - apiVersion: v2
     appVersion: 1.16.2
-    created: "2025-04-01T13:57:50.99271586Z"
+    created: "2025-04-01T15:30:31.474108903Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -54,7 +69,7 @@ entries:
     version: 1.16.2
   - apiVersion: v2
     appVersion: 1.15.2
-    created: "2025-04-01T13:57:50.988189926Z"
+    created: "2025-04-01T15:30:31.469651873Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -69,7 +84,7 @@ entries:
     version: 1.15.2
   - apiVersion: v2
     appVersion: 1.14.6
-    created: "2025-04-01T13:57:50.984043333Z"
+    created: "2025-04-01T15:30:31.465229381Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -84,7 +99,7 @@ entries:
     version: 1.14.9
   - apiVersion: v2
     appVersion: 1.14.6
-    created: "2025-04-01T13:57:50.98097757Z"
+    created: "2025-04-01T15:30:31.461472886Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -99,7 +114,7 @@ entries:
     version: 1.14.8
   - apiVersion: v2
     appVersion: 1.14.6
-    created: "2025-04-01T13:57:50.977033177Z"
+    created: "2025-04-01T15:30:31.458192043Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -114,7 +129,7 @@ entries:
     version: 1.14.7
   - apiVersion: v2
     appVersion: 1.14.6
-    created: "2025-04-01T13:57:50.973960952Z"
+    created: "2025-04-01T15:30:31.454298541Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -129,7 +144,7 @@ entries:
     version: 1.14.6
   - apiVersion: v2
     appVersion: 1.14.6-post1
-    created: "2025-04-01T13:57:50.970148569Z"
+    created: "2025-04-01T15:30:31.45116353Z"
     dependencies:
     - alias: jetstackCertManager
       name: cert-manager
@@ -144,7 +159,7 @@ entries:
     version: 1.14.6-post1
   - apiVersion: v2
     appVersion: 1.14.6
-    created: "2025-04-01T13:57:50.966191879Z"
+    created: "2025-04-01T15:30:31.447032043Z"
     dependencies:
     - alias: jetstack-cert-manager
       name: cert-manager
@@ -160,13 +175,13 @@ entries:
   dogfood-jupyter:
   - apiVersion: v2
     appVersion: 3.3.8
-    created: "2025-04-01T13:57:51.001351511Z"
+    created: "2025-04-01T15:30:31.488198025Z"
     dependencies:
     - name: jupyterhub
       repository: https://hub.jupyter.org/helm-chart/
       version: 3.3.8
     description: Jupyterhub for Dogfood
-    digest: 432e9909d0a0614dcec75841792cd5c950519dc8ba5375a2603e45eabfa82350
+    digest: f360d2b7bceb0cec203692d7ea6d427fbfb806b2fc84d22570fff448bd76c6cf
     name: dogfood-jupyter
     type: application
     urls:
@@ -175,14 +190,14 @@ entries:
   dogfood-tetrate-managementplane:
   - apiVersion: v2
     appVersion: 1.12.1
-    created: "2025-04-01T13:57:51.039633553Z"
+    created: "2025-04-01T15:30:31.526746349Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
       repository: https://charts.dl.tetrate.io/public/helm/charts/
       version: 1.12.1
     description: A Helm chart for Kubernetes
-    digest: 620f08723ad400ef1620b95220c6d83839d1bf9b428ab9f5b671181d88b1b031
+    digest: 508b1f89cbc74fb0a6fd6aafbed8772aaddff04480d713019556cf80a3895a69
     name: dogfood-tetrate-managementplane
     type: application
     urls:
@@ -190,7 +205,7 @@ entries:
     version: 1.12.1
   - apiVersion: v2
     appVersion: 1.12.1-internal-rc2
-    created: "2025-04-01T13:57:51.037084384Z"
+    created: "2025-04-01T15:30:31.524974012Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -205,7 +220,7 @@ entries:
     version: 1.12.1-internal-rc2
   - apiVersion: v2
     appVersion: 1.12.1-internal-rc0
-    created: "2025-04-01T13:57:51.035359238Z"
+    created: "2025-04-01T15:30:31.523215061Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -220,7 +235,7 @@ entries:
     version: 1.12.1-internal-rc0
   - apiVersion: v2
     appVersion: 1.12.0
-    created: "2025-04-01T13:57:51.033676221Z"
+    created: "2025-04-01T15:30:31.521165773Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -235,7 +250,7 @@ entries:
     version: 1.12.0
   - apiVersion: v2
     appVersion: 1.12.0-internal-rc8
-    created: "2025-04-01T13:57:51.031978255Z"
+    created: "2025-04-01T15:30:31.51874478Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -250,7 +265,7 @@ entries:
     version: 1.12.0-internal-rc8
   - apiVersion: v2
     appVersion: 1.12.0-internal-rc7
-    created: "2025-04-01T13:57:51.03019987Z"
+    created: "2025-04-01T15:30:31.516934052Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -265,7 +280,7 @@ entries:
     version: 1.12.0-internal-rc7
   - apiVersion: v2
     appVersion: 1.12.0-internal-rc6
-    created: "2025-04-01T13:57:51.027642342Z"
+    created: "2025-04-01T15:30:31.515215876Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -280,7 +295,7 @@ entries:
     version: 1.12.0-internal-rc6
   - apiVersion: v2
     appVersion: 1.12.0-internal-rc5
-    created: "2025-04-01T13:57:51.025928287Z"
+    created: "2025-04-01T15:30:31.513385612Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -295,7 +310,7 @@ entries:
     version: 1.12.0-internal-rc5
   - apiVersion: v2
     appVersion: 1.12.0-internal-rc11
-    created: "2025-04-01T13:57:51.02421886Z"
+    created: "2025-04-01T15:30:31.510838323Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -310,7 +325,7 @@ entries:
     version: 1.12.0-internal-rc11
   - apiVersion: v2
     appVersion: 1.11.2
-    created: "2025-04-01T13:57:51.022489686Z"
+    created: "2025-04-01T15:30:31.509097966Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -325,7 +340,7 @@ entries:
     version: 1.11.2
   - apiVersion: v2
     appVersion: 1.11.1
-    created: "2025-04-01T13:57:51.020034128Z"
+    created: "2025-04-01T15:30:31.507339385Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -340,7 +355,7 @@ entries:
     version: 1.11.1
   - apiVersion: v2
     appVersion: 1.11.0
-    created: "2025-04-01T13:57:51.018339299Z"
+    created: "2025-04-01T15:30:31.50561088Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -355,7 +370,7 @@ entries:
     version: 1.11.0
   - apiVersion: v2
     appVersion: 1.11.0-internal-rc5
-    created: "2025-04-01T13:57:51.017271893Z"
+    created: "2025-04-01T15:30:31.504515222Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -370,7 +385,7 @@ entries:
     version: 1.11.0-internal-rc5
   - apiVersion: v2
     appVersion: 1.11.0-internal-rc3
-    created: "2025-04-01T13:57:51.016203214Z"
+    created: "2025-04-01T15:30:31.503110709Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -385,7 +400,7 @@ entries:
     version: 1.11.0-internal-rc3
   - apiVersion: v2
     appVersion: 1.10.5
-    created: "2025-04-01T13:57:51.015095623Z"
+    created: "2025-04-01T15:30:31.501493832Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -400,7 +415,7 @@ entries:
     version: 1.10.5
   - apiVersion: v2
     appVersion: 1.10.3
-    created: "2025-04-01T13:57:51.013526163Z"
+    created: "2025-04-01T15:30:31.500375722Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -415,7 +430,7 @@ entries:
     version: 1.10.3
   - apiVersion: v2
     appVersion: 1.10.2
-    created: "2025-04-01T13:57:51.012156652Z"
+    created: "2025-04-01T15:30:31.499245991Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -430,7 +445,7 @@ entries:
     version: 1.10.2
   - apiVersion: v2
     appVersion: 1.10.1
-    created: "2025-04-01T13:57:51.011066954Z"
+    created: "2025-04-01T15:30:31.49805214Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -445,7 +460,7 @@ entries:
     version: 1.10.1
   - apiVersion: v2
     appVersion: 1.10.1-internal-rc0
-    created: "2025-04-01T13:57:51.009896676Z"
+    created: "2025-04-01T15:30:31.496879168Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -460,7 +475,7 @@ entries:
     version: 1.10.1-internal-rc0
   - apiVersion: v2
     appVersion: 1.10.0
-    created: "2025-04-01T13:57:51.008809813Z"
+    created: "2025-04-01T15:30:31.495748655Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -475,7 +490,7 @@ entries:
     version: 1.10.0
   - apiVersion: v2
     appVersion: 1.10.0-internal-rc5
-    created: "2025-04-01T13:57:51.007704556Z"
+    created: "2025-04-01T15:30:31.494066561Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -490,7 +505,7 @@ entries:
     version: 1.10.0-internal-rc5
   - apiVersion: v2
     appVersion: 1.10.0-internal-rc4
-    created: "2025-04-01T13:57:51.005850425Z"
+    created: "2025-04-01T15:30:31.492694149Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -505,7 +520,7 @@ entries:
     version: 1.10.0-internal-rc4
   - apiVersion: v2
     appVersion: 1.10.0-internal-rc3
-    created: "2025-04-01T13:57:51.004597412Z"
+    created: "2025-04-01T15:30:31.491586859Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -520,7 +535,7 @@ entries:
     version: 1.10.0-internal-rc3
   - apiVersion: v2
     appVersion: 1.10.0-internal-rc2
-    created: "2025-04-01T13:57:51.003529014Z"
+    created: "2025-04-01T15:30:31.490480161Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -535,7 +550,7 @@ entries:
     version: 1.10.0-internal-rc2
   - apiVersion: v2
     appVersion: 1.10.0-internal-rc1
-    created: "2025-04-01T13:57:51.002454214Z"
+    created: "2025-04-01T15:30:31.48934566Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -550,7 +565,7 @@ entries:
     version: 1.10.0-internal-rc1
   - apiVersion: v2
     appVersion: 1.9.2
-    created: "2025-04-01T13:57:51.047881306Z"
+    created: "2025-04-01T15:30:31.535074846Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -565,7 +580,7 @@ entries:
     version: 1.9.2
   - apiVersion: v2
     appVersion: 1.9.1
-    created: "2025-04-01T13:57:51.045975984Z"
+    created: "2025-04-01T15:30:31.533970221Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -580,7 +595,7 @@ entries:
     version: 1.9.1
   - apiVersion: v2
     appVersion: 1.9.1-post5
-    created: "2025-04-01T13:57:51.044932032Z"
+    created: "2025-04-01T15:30:31.532906503Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -595,7 +610,7 @@ entries:
     version: 1.9.1-post5
   - apiVersion: v2
     appVersion: 1.9.1-post4
-    created: "2025-04-01T13:57:51.043903288Z"
+    created: "2025-04-01T15:30:31.531823258Z"
     dependencies:
     - alias: tetrateManagementPlane
       name: managementplane
@@ -610,7 +625,7 @@ entries:
     version: 1.9.1-post4
   - apiVersion: v2
     appVersion: 1.9.1-post3
-    created: "2025-04-01T13:57:51.042871478Z"
+    created: "2025-04-01T15:30:31.530552259Z"
     dependencies:
     - alias: tetrate-managementplane
       name: managementplane
@@ -625,7 +640,7 @@ entries:
     version: 1.9.1-post3
   - apiVersion: v2
     appVersion: 1.9.1-post2
-    created: "2025-04-01T13:57:51.041835631Z"
+    created: "2025-04-01T15:30:31.52889155Z"
     dependencies:
     - alias: tetrate-managementplane
       name: managementplane
@@ -640,7 +655,7 @@ entries:
     version: 1.9.1-post2
   - apiVersion: v2
     appVersion: 1.9.1-post1
-    created: "2025-04-01T13:57:51.040764658Z"
+    created: "2025-04-01T15:30:31.527825216Z"
     dependencies:
     - alias: tetrate-managementplane
       name: managementplane
@@ -656,9 +671,9 @@ entries:
   fortio-svc:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-04-01T13:57:51.048141282Z"
+    created: "2025-04-01T15:30:31.535348435Z"
     description: A Helm chart for Kubernetes
-    digest: 9f58fe61b83c8514aadb22642b607ea43e60964a067481f71ecddede007fa0a7
+    digest: 10a32210743de503c1595b6b9009c6885f5dd2b8cff0adb70d3443d6005b401d
     name: fortio-svc
     type: application
     urls:
@@ -667,9 +682,9 @@ entries:
   guacamole:
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2025-04-01T13:57:51.049959923Z"
+    created: "2025-04-01T15:30:31.537309322Z"
     description: A Helm chart for Kubernetes
-    digest: f53e383b59060a4765b2afba31c32b703e01dbab4427fb5113757873278550e7
+    digest: 4660293d77fee4b12d5dc2b246fa0c833659e16cf850813bf97fd6a5695696e6
     name: guacamole
     type: application
     urls:
@@ -677,7 +692,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2025-04-01T13:57:51.04960532Z"
+    created: "2025-04-01T15:30:31.536906613Z"
     description: A Helm chart for Kubernetes
     digest: 127d2d601c77bf54eaa1e7f65fb6a7f982dc6063ddd6a7c6531f709c143fba36
     name: guacamole
@@ -687,7 +702,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2025-04-01T13:57:51.049240217Z"
+    created: "2025-04-01T15:30:31.536511729Z"
     description: A Helm chart for Kubernetes
     digest: 4424587632829cdc6afaabc888a339ff212cba8d9ca9177fefd537a2514e8245
     name: guacamole
@@ -697,7 +712,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2025-04-01T13:57:51.048891054Z"
+    created: "2025-04-01T15:30:31.536145036Z"
     description: A Helm chart for Kubernetes
     digest: ba315afb604b62caa349899832bf13be786112548a107194ca2a66a800d93584
     name: guacamole
@@ -707,7 +722,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.5.5
-    created: "2025-04-01T13:57:51.048533015Z"
+    created: "2025-04-01T15:30:31.535719024Z"
     description: A Helm chart for Kubernetes
     digest: 0d4641c8899047cbe7a9091eae9d94f00d5348772d68a17bb5fe00aecb1f3c7f
     name: guacamole
@@ -718,12 +733,12 @@ entries:
   obs-svc:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-04-01T13:57:51.050208017Z"
+    created: "2025-04-01T15:30:31.538052725Z"
     description: A Helm chart for Kubernetes
-    digest: 352703579e634f5b6c9a80e4b339674805e1e458f2a856879b2b54709659e351
+    digest: b7c5f5d5a7a82ec9d4f0a4854f494246e7ddeabd516fee4510def568c0729d46
     name: obs-svc
     type: application
     urls:
     - https://tetratecx.github.io/dogfood-helm/obs-svc-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-01T13:57:50.962345456Z"
+generated: "2025-04-01T15:30:31.443147978Z"
