@@ -15,6 +15,13 @@ tetrateManagementPlane:
     hub: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
     organization: tetrate
     enableWasmDownloadProxy: true 
+    dataStore:
+      auditLogsCleanupRetention: 168h
+      embeddedPostgres:
+        tlsCertDuration: 8760h
+        tlsCertRenewBefore: 720h
+        tlsCaDuration: 87600h
+        tlsCaRenewBefore: 7200h
     components:
       gitops:
         enabled: true
