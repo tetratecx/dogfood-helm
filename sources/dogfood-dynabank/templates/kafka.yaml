@@ -1,0 +1,182 @@
+{{- if .Values.components.zookeeper }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+    component: messaging
+spec:
+  ports:
+  - port: 2181
+    targetPort: 2181
+    protocol: TCP
+    name: zookeeper
+  selector:
+    app: zookeeper
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-pv-claim
+  labels:
+    app: zookeeper
+    component: messaging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+    component: messaging
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+      tier: infrastructure
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+        tier: infrastructure
+        component: messaging
+    spec:
+      containers:
+      - image: confluentinc/cp-zookeeper:7.4.0
+        name: zookeeper
+        imagePullPolicy: {{ .Values.global.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        - name: ZOOKEEPER_CLIENT_PORT
+          value: "2181"
+        - name: ZOOKEEPER_TICK_TIME
+          value: "2000"
+        ports:
+        - containerPort: 2181
+          name: zookeeper
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: zookeeper-persistent-storage
+          mountPath: /var/lib/zookeeper
+      volumes:
+      - name: zookeeper-persistent-storage
+        persistentVolumeClaim:
+          claimName: zookeeper-pv-claim
+{{- end }}
+---
+{{- if .Values.components.kafka }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+    component: messaging
+spec:
+  ports:
+  - port: 9092
+    targetPort: 9092
+    protocol: TCP
+    name: kafka-external
+  - port: 29092
+    targetPort: 29092
+    protocol: TCP
+    name: kafka-internal
+  selector:
+    app: kafka
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-pv-claim
+  labels:
+    app: kafka
+    component: messaging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+    component: messaging
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+      tier: infrastructure
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kafka
+        tier: infrastructure
+        component: messaging
+    spec:
+      containers:
+      - image: confluentinc/cp-kafka:7.4.0
+        name: kafka
+        imagePullPolicy: {{ .Values.global.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        - name: KAFKA_BROKER_ID
+          value: "1"
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: "zookeeper:2181"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "INTERNAL://kafka:29092,EXTERNAL://kafka:9092"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: "INTERNAL"
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+          value: "1"
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "true"
+        ports:
+        - containerPort: 9092
+          name: kafka-external
+        - containerPort: 29092
+          name: kafka-internal
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: kafka-persistent-storage
+          mountPath: /var/lib/kafka/data
+      volumes:
+      - name: kafka-persistent-storage
+        persistentVolumeClaim:
+          claimName: kafka-pv-claim
+{{- end }}

@@ -1,0 +1,119 @@
+{{- if .Values.components.fineract }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fineract-server
+  labels:
+    app: fineract-server
+    component: core-banking
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    name: http
+  - protocol: TCP
+    port: 8443
+    targetPort: 8443
+    name: https
+  selector:
+    app: fineract-server
+    tier: backend
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fineract-server
+  labels:
+    app: fineract-server
+    component: core-banking
+spec:
+  selector:
+    matchLabels:
+      app: fineract-server
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: fineract-server
+        tier: backend
+        component: core-banking
+    spec:
+      initContainers:
+        - name: init-mydb
+          image: busybox:1.28
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "fineractmysql" 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
+      containers:
+      - name: fineract-server
+        image: {{ .Values.global.imageRegistry | default "us-east1-docker.pkg.dev/dogfood-cx/registryrepository" }}/fineract:latest
+        imagePullPolicy: {{ .Values.global.imagePullPolicy | default "Always" }}
+        resources:
+          requests:
+            memory: "0.5Gi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /fineract-provider/actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 180
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /fineract-provider/actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 180
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        env:
+        - name: FINERACT_NODE_ID
+          value: '1'
+        - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
+          value: 'org.mariadb.jdbc.Driver'
+        - name: FINERACT_HIKARI_JDBC_URL
+          value: 'jdbc:mariadb://fineractmysql:3306/fineract_tenants'
+        - name: FINERACT_HIKARI_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: fineract-tenants-db-secret
+              key: username
+        - name: FINERACT_HIKARI_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fineract-tenants-db-secret
+              key: password
+        - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
+          value: 'fineractmysql'
+        - name: FINERACT_DEFAULT_TENANTDB_PORT
+          value: '3306'
+        - name: FINERACT_DEFAULT_TENANTDB_UID
+          valueFrom:
+            secretKeyRef:
+              name: fineract-tenants-db-secret
+              key: username
+        - name: FINERACT_DEFAULT_TENANTDB_PWD
+          valueFrom:
+            secretKeyRef:
+              name: fineract-tenants-db-secret
+              key: password
+        - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
+          value: ''
+        - name: JAVA_TOOL_OPTIONS
+          value: '-Xmx1G'
+        - name: FINERACT_SERVER_PORT
+          value: '8080'
+        - name: FINERACT_SERVER_SSL_ENABLED
+          value: 'false'
+        ports:
+        - containerPort: 8080
+        - containerPort: 8443
+{{- end }}

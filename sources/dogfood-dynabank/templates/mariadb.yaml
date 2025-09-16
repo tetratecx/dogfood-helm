@@ -1,0 +1,117 @@
+{{- if .Values.components.mariadb }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fineract-tenants-db-secret
+type: Opaque
+data:
+  username: {{ "root" | b64enc }}
+  password: {{ "mysql" | b64enc }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fineractmysql-initdb
+  labels:
+    app: fineract-server
+data:
+  init.sql: |
+    # create databases
+    CREATE DATABASE IF NOT EXISTS `fineract_tenants`;
+    CREATE DATABASE IF NOT EXISTS `fineract_default`;
+    # create root user and grant rights
+    GRANT ALL ON *.* TO 'root'@'%';
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fineractmysql-persistent-storage
+  labels:
+    app: fineract-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fineractmysql
+  labels:
+    app: fineract-server
+spec:
+  clusterIP: None
+  ports:
+    - port: 3306
+  selector:
+    app: fineract-server
+    tier: fineractmysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fineract-server
+  name: fineractmysql
+spec:
+  selector:
+    matchLabels:
+      app: fineract-server
+      tier: fineractmysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: fineract-server
+        tier: fineractmysql
+    spec:
+      containers:
+        - image: mariadb:11.4
+          name: mysql
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1000m"
+            limits:
+              memory: "5Gi"
+              cpu: "2000m"
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fineract-tenants-db-secret
+                  key: password
+          livenessProbe:
+            exec:
+              command: ["sh","-c","mariadb-admin ping -h localhost -uroot -p${MARIADB_ROOT_PASSWORD}"]
+            failureThreshold: 10
+            timeoutSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mariadb-admin ping -uroot -p${MARIADB_ROOT_PASSWORD}
+            failureThreshold: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          ports:
+            - containerPort: 3306
+              name: fineractmysql
+          volumeMounts:
+            - name: fineractmysql-initdb
+              mountPath: /docker-entrypoint-initdb.d/
+            - name: fineractmysql-persistent-storage
+              mountPath: /var/lib/mysql/
+      volumes:
+        - name: fineractmysql-initdb
+          configMap:
+            name: fineractmysql-initdb
+        - name: fineractmysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: fineractmysql-persistent-storage
+{{- end }}

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: dynabank
+description: Complete DynaBank Demo - Banking microservices platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - banking
+  - microservices
+  - demo
+  - api-gateway
+  - service-mesh
+  - fineract
+maintainers:
+  - name: DynaBank Team
+    email: team@dynabank.demo

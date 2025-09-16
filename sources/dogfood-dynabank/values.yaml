@@ -1,0 +1,46 @@
+# DynaBank Complete Application Configuration
+
+global:
+  imageRegistry: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
+
+# Component enablement flags
+components:
+  # Infrastructure
+  mariadb: true
+  redis: true
+  kafka: false # unstable
+  zookeeper: true
+  fineract: true
+  fineractInit: true
+  
+  # Application Services  
+  transactionApi: true
+  fraudService: false # pending enhancement
+  notificationService: false # pending enhancement
+  webPortal: true
+
+# Optional overrides - only uncomment/modify if you need to change defaults
+# mariadb:
+#   image:
+#     repository: mariadb
+#     tag: "11.4"
+#   persistence:
+#     size: 5Gi
+#     storageClass: ""
+
+# redis:
+#   image:
+#     repository: redis
+#     tag: "7-alpine"
+#   persistence:
+#     size: 1Gi
+#     storageClass: ""
+
+# transactionApi:
+#   replicaCount: 2
+#   image:
+#     tag: "latest"
+
+# webPortal:
+#   image:
+#     tag: "latest"

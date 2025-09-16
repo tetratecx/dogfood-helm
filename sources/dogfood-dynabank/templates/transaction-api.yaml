@@ -1,0 +1,131 @@
+{{- if .Values.components.transactionApi }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-api
+  labels:
+    app: transaction-api
+    service: transaction-api
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: transaction-api
+  template:
+    metadata:
+      labels:
+        app: transaction-api
+        service: transaction-api
+        version: v1
+    spec:
+      containers:
+      - name: transaction-api
+        image: {{ .Values.global.imageRegistry | default "us-east1-docker.pkg.dev/dogfood-cx/registryrepository" }}/dynabank/transaction-api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: PORT
+          value: "3000"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: LOG_FORMAT
+          value: "json"
+        - name: FINERACT_URL
+          value: "http://fineract-server:8080"
+        - name: FINERACT_USERNAME
+          value: "mifos"
+        - name: FINERACT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fineract-credentials
+              key: password
+        - name: FINERACT_TIMEOUT
+          value: "30"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: REDIS_PASSWORD
+          value: ""
+        - name: REDIS_DB
+          value: "0"
+        - name: KAFKA_BROKERS
+          value: "kafka:29092"
+        - name: KAFKA_TOPIC_TRANSACTIONS
+          value: "fineract.transactions"
+        - name: KAFKA_TOPIC_FRAUD_SCORES
+          value: "fraud.scores"
+        - name: KAFKA_TOPIC_NOTIFICATIONS
+          value: "notifications.queue"
+        - name: KAFKA_TOPIC_AUDIT_TRAIL
+          value: "audit.trail"
+        - name: FRAUD_SERVICE_URL
+          value: "http://fraud-service:8000"
+        - name: FRAUD_SERVICE_TIMEOUT
+          value: "10"
+        livenessProbe:
+          httpGet:
+            path: /system/health/live
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /system/health/ready
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction-api
+  labels:
+    app: transaction-api
+    service: transaction-api
+spec:
+  selector:
+    app: transaction-api
+  ports:
+  - name: http
+    port: 3000
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fineract-credentials
+type: Opaque
+data:
+  password: cGFzc3dvcmQ=  # base64 encoded "password"
+{{- end }}
