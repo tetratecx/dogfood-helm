@@ -3,80 +3,58 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fraud-service
+  name: {{ .Values.fraudService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fraud-service
-    service: fraud-service
-    version: v1
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fraud-detection
 spec:
-  replicas: 1
+  replicas: {{ .Values.fraudService.replicaCount }}
   selector:
     matchLabels:
-      app: fraud-service
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: fraud-detection
   template:
     metadata:
       labels:
-        app: fraud-service
-        service: fraud-service
-        version: v1
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: fraud-detection
     spec:
       containers:
       - name: fraud-service
-        image: {{ .Values.global.imageRegistry | default "us-east1-docker.pkg.dev/dogfood-cx/registryrepository" }}/dynabank/fraud-service:latest
-        imagePullPolicy: Always
+        image: {{ include "dynabank.image" .Values.fraudService }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         ports:
-        - containerPort: 8000
-          name: http
-        - containerPort: 9091
-          name: metrics
+        - name: http
+          containerPort: {{ .Values.fraudService.service.targetPort }}
+          protocol: TCP
         env:
-        - name: PORT
-          value: "8000"
-        - name: LOG_LEVEL
-          value: "info"
-        - name: REDIS_URL
-          value: "redis://redis:6379"
-        - name: REDIS_PASSWORD
-          value: ""
-        - name: REDIS_DB
-          value: "1"
-        - name: KAFKA_BROKERS
-          value: "kafka:29092"
-        - name: KAFKA_TOPIC_FRAUD_SCORES
-          value: "fraud.scores"
-        - name: KAFKA_TOPIC_TRANSACTIONS
-          value: "fineract.transactions"
+        {{- range $key, $value := .Values.fraudService.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.fraudService.healthCheck.liveness }}
         livenessProbe:
           httpGet:
-            path: /health
+            path: {{ .Values.fraudService.healthCheck.liveness.path }}
             port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.fraudService.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.fraudService.healthCheck.liveness.periodSeconds }}
           timeoutSeconds: 5
           failureThreshold: 3
+        {{- end }}
+        {{- if .Values.fraudService.healthCheck.readiness }}
         readinessProbe:
           httpGet:
-            path: /health
+            path: {{ .Values.fraudService.healthCheck.readiness.path }}
             port: http
-          initialDelaySeconds: 10
-          periodSeconds: 5
+          initialDelaySeconds: {{ .Values.fraudService.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.fraudService.healthCheck.readiness.periodSeconds }}
           timeoutSeconds: 3
           failureThreshold: 3
+        {{- end }}
         resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+          {{- include "dynabank.resources" .Values.fraudService | nindent 10 }}
         volumeMounts:
         - name: tmp-volume
           mountPath: /tmp
@@ -88,111 +66,82 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fraud-service
+  name: {{ .Values.fraudService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fraud-service
-    service: fraud-service
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fraud-detection
 spec:
-  selector:
-    app: fraud-service
+  type: ClusterIP
   ports:
   - name: http
-    port: 8000
+    port: {{ .Values.fraudService.service.port }}
     targetPort: http
     protocol: TCP
-  - name: metrics
-    port: 9091
-    targetPort: metrics
-    protocol: TCP
-  type: ClusterIP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: fraud-detection
 {{- end }}
 ---
 {{- if .Values.components.notificationService }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-service
+  name: {{ .Values.notificationService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: notification-service
-    service: notification-service
-    version: v1
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: notification
 spec:
-  replicas: 1
+  replicas: {{ .Values.notificationService.replicaCount }}
   selector:
     matchLabels:
-      app: notification-service
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: notification
   template:
     metadata:
       labels:
-        app: notification-service
-        service: notification-service
-        version: v1
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: notification
     spec:
       containers:
       - name: notification-service
-        image: {{ .Values.global.imageRegistry | default "us-east1-docker.pkg.dev/dogfood-cx/registryrepository" }}/dynabank/notification-service:latest
-        imagePullPolicy: Always
+        image: {{ include "dynabank.image" .Values.notificationService }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         ports:
-        - containerPort: 8080
-          name: http
-        - containerPort: 9092
-          name: metrics
+        - name: http
+          containerPort: {{ .Values.notificationService.service.http.targetPort }}
+          protocol: TCP
+        - name: websocket
+          containerPort: {{ .Values.notificationService.service.websocket.targetPort }}
+          protocol: TCP
         env:
-        - name: PORT
-          value: "8080"
-        - name: LOG_LEVEL
-          value: "info"
-        - name: KAFKA_BROKERS
-          value: "kafka:29092"
-        - name: KAFKA_GROUP_ID
-          value: "notification-service"
-        - name: KAFKA_TOPIC_NOTIFICATIONS
-          value: "notifications.queue"
-        - name: KAFKA_TOPIC_AUDIT_TRAIL
-          value: "audit.trail"
-        - name: EMAIL_SMTP_HOST
-          value: "localhost"
-        - name: EMAIL_SMTP_PORT
-          value: "587"
-        - name: EMAIL_USERNAME
-          value: ""
-        - name: EMAIL_PASSWORD
-          value: ""
-        - name: SMS_PROVIDER
-          value: "mock"
-        - name: SMS_API_KEY
-          value: ""
+        {{- range $key, $value := .Values.notificationService.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.notificationService.healthCheck.liveness }}
         livenessProbe:
           httpGet:
-            path: /health
+            path: {{ .Values.notificationService.healthCheck.liveness.path }}
             port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.notificationService.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.notificationService.healthCheck.liveness.periodSeconds }}
           timeoutSeconds: 5
           failureThreshold: 3
+        {{- end }}
+        {{- if .Values.notificationService.healthCheck.readiness }}
         readinessProbe:
           httpGet:
-            path: /health
+            path: {{ .Values.notificationService.healthCheck.readiness.path }}
             port: http
-          initialDelaySeconds: 10
-          periodSeconds: 5
+          initialDelaySeconds: {{ .Values.notificationService.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.notificationService.healthCheck.readiness.periodSeconds }}
           timeoutSeconds: 3
           failureThreshold: 3
+        {{- end }}
         resources:
-          requests:
-            memory: "128Mi"
-            cpu: "50m"
-          limits:
-            memory: "256Mi"
-            cpu: "250m"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+          {{- include "dynabank.resources" .Values.notificationService | nindent 10 }}
         volumeMounts:
         - name: tmp-volume
           mountPath: /tmp
@@ -204,91 +153,83 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: notification-service
+  name: {{ .Values.notificationService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: notification-service
-    service: notification-service
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: notification
 spec:
-  selector:
-    app: notification-service
+  type: ClusterIP
   ports:
   - name: http
-    port: 8080
+    port: {{ .Values.notificationService.service.http.port }}
     targetPort: http
     protocol: TCP
-  - name: metrics
-    port: 9092
-    targetPort: metrics
+  - name: websocket
+    port: {{ .Values.notificationService.service.websocket.port }}
+    targetPort: websocket
     protocol: TCP
-  type: ClusterIP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: notification
 {{- end }}
 ---
 {{- if .Values.components.webPortal }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-portal
+  name: {{ .Values.webPortal.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: web-portal
-    service: web-portal
-    version: v1
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
 spec:
-  replicas: 1
+  replicas: {{ .Values.webPortal.replicaCount }}
   selector:
     matchLabels:
-      app: web-portal
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: frontend
   template:
     metadata:
       labels:
-        app: web-portal
-        service: web-portal
-        version: v1
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: frontend
     spec:
       containers:
       - name: web-portal
-        image: {{ .Values.global.imageRegistry | default "us-east1-docker.pkg.dev/dogfood-cx/registryrepository" }}/dynabank/web-portal:latest
-        imagePullPolicy: Always
+        image: {{ include "dynabank.image" .Values.webPortal }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         ports:
-        - containerPort: 3000
-          name: http
+        - name: http
+          containerPort: {{ .Values.webPortal.service.targetPort }}
+          protocol: TCP
         env:
-        - name: PORT
-          value: "3000"
-        - name: REACT_APP_API_URL
-          value: "http://transaction-api:3000"
-        - name: REACT_APP_ENVIRONMENT
-          value: "development"
+        {{- range $key, $value := .Values.webPortal.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.webPortal.healthCheck.liveness }}
         livenessProbe:
           httpGet:
-            path: /
+            path: {{ .Values.webPortal.healthCheck.liveness.path }}
             port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.webPortal.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.webPortal.healthCheck.liveness.periodSeconds }}
           timeoutSeconds: 5
           failureThreshold: 3
+        {{- end }}
+        {{- if .Values.webPortal.healthCheck.readiness }}
         readinessProbe:
           httpGet:
-            path: /
+            path: {{ .Values.webPortal.healthCheck.readiness.path }}
             port: http
-          initialDelaySeconds: 10
-          periodSeconds: 5
+          initialDelaySeconds: {{ .Values.webPortal.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.webPortal.healthCheck.readiness.periodSeconds }}
           timeoutSeconds: 3
           failureThreshold: 3
+        {{- end }}
         resources:
-          requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+          {{- include "dynabank.resources" .Values.webPortal | nindent 10 }}
         volumeMounts:
         - name: tmp-volume
           mountPath: /tmp
@@ -300,17 +241,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: web-portal
+  name: {{ .Values.webPortal.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: web-portal
-    service: web-portal
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
 spec:
-  selector:
-    app: web-portal
+  type: ClusterIP
   ports:
   - name: http
-    port: 3000
+    port: {{ .Values.webPortal.service.port }}
     targetPort: http
     protocol: TCP
-  type: ClusterIP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
 {{- end }}

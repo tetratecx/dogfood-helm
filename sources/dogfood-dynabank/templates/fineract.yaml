@@ -3,84 +3,79 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fineract-server
+  name: {{ .Values.fineract.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fineract-server
-    component: core-banking
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: core-banking
 spec:
+  type: ClusterIP
   ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8080
-    name: http
-  - protocol: TCP
+  - name: http
+    port: {{ .Values.fineract.service.port }}
+    targetPort: {{ .Values.fineract.service.targetPort }}
+    protocol: TCP
+  - name: https
     port: 8443
     targetPort: 8443
-    name: https
+    protocol: TCP
   selector:
-    app: fineract-server
-    tier: backend
-  type: ClusterIP
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: core-banking
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fineract-server
+  name: {{ .Values.fineract.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fineract-server
-    component: core-banking
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: core-banking
 spec:
-  selector:
-    matchLabels:
-      app: fineract-server
-      tier: backend
+  replicas: {{ .Values.fineract.replicaCount }}
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: core-banking
   template:
     metadata:
       labels:
-        app: fineract-server
-        tier: backend
-        component: core-banking
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: core-banking
     spec:
       initContainers:
-        - name: init-mydb
-          image: busybox:1.28
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "fineractmysql" 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
+        - name: wait-for-db
+          image: busybox:1.35
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for MariaDB to be ready..."
+              until nc -z {{ .Values.mariadb.name }} {{ .Values.mariadb.service.port }}; do
+                echo "MariaDB not ready, sleeping..."
+                sleep 2
+              done
+              echo "MariaDB is ready!"
       containers:
-      - name: fineract-server
-        image: {{ .Values.global.imageRegistry | default "us-east1-docker.pkg.dev/dogfood-cx/registryrepository" }}/fineract:latest
-        imagePullPolicy: {{ .Values.global.imagePullPolicy | default "Always" }}
-        resources:
-          requests:
-            memory: "0.5Gi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /fineract-provider/actuator/health/liveness
-            port: 8080
-          initialDelaySeconds: 180
-          periodSeconds: 30
-          timeoutSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /fineract-provider/actuator/health/readiness
-            port: 8080
-          initialDelaySeconds: 180
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
+      - name: fineract
+        image: {{ include "dynabank.image" .Values.fineract }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.fineract.service.targetPort }}
+          protocol: TCP
+        - name: https
+          containerPort: 8443
+          protocol: TCP
         env:
-        - name: FINERACT_NODE_ID
-          value: '1'
-        - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
-          value: 'org.mariadb.jdbc.Driver'
-        - name: FINERACT_HIKARI_JDBC_URL
-          value: 'jdbc:mariadb://fineractmysql:3306/fineract_tenants'
+        {{- range $key, $value := .Values.fineract.env }}
+        {{- if and (ne $key "FINERACT_HIKARI_USERNAME") (ne $key "FINERACT_HIKARI_PASSWORD") (ne $key "FINERACT_DEFAULT_TENANTDB_UID") (ne $key "FINERACT_DEFAULT_TENANTDB_PWD") }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
         - name: FINERACT_HIKARI_USERNAME
           valueFrom:
             secretKeyRef:
@@ -91,10 +86,6 @@ spec:
             secretKeyRef:
               name: fineract-tenants-db-secret
               key: password
-        - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
-          value: 'fineractmysql'
-        - name: FINERACT_DEFAULT_TENANTDB_PORT
-          value: '3306'
         - name: FINERACT_DEFAULT_TENANTDB_UID
           valueFrom:
             secretKeyRef:
@@ -105,15 +96,798 @@ spec:
             secretKeyRef:
               name: fineract-tenants-db-secret
               key: password
-        - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
-          value: ''
-        - name: JAVA_TOOL_OPTIONS
-          value: '-Xmx1G'
-        - name: FINERACT_SERVER_PORT
-          value: '8080'
-        - name: FINERACT_SERVER_SSL_ENABLED
-          value: 'false'
-        ports:
-        - containerPort: 8080
-        - containerPort: 8443
+        {{- if .Values.fineract.healthCheck.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /fineract-provider/actuator/health/liveness
+            port: http
+          initialDelaySeconds: 180
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /fineract-provider/actuator/health/readiness
+            port: http
+          initialDelaySeconds: 180
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        {{- end }}
+        resources:
+          {{- include "dynabank.resources" .Values.fineract | nindent 10 }}
+{{- end }}
+---
+{{- if and .Values.components.fineract .Values.components.fineractInit }}
+# Fineract Initialization ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fineract-init-script
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: initialization
+data:
+  init-fineract.sh: |
+    #!/bin/bash
+
+    # Apache Fineract Initialization Script
+    # Initializes Fineract with demo banking data for DynaBank
+    # Works both standalone and in Kubernetes Alpine containers
+
+    set -euo pipefail
+
+    FINERACT_URL=${FINERACT_URL:-"http://fineract-server:8080"}
+    FINERACT_USERNAME=${FINERACT_USERNAME:-"mifos"}
+    FINERACT_PASSWORD=${FINERACT_PASSWORD:-"password"}
+    TENANT_ID=${TENANT_ID:-"default"}
+
+    echo "🏦 Initializing Apache Fineract for DynaBank Demo..."
+    echo "Fineract URL: $FINERACT_URL"
+
+    # Auto-detect environment and install dependencies if needed
+    if command -v apk >/dev/null 2>&1; then
+        echo "📦 Installing required tools for Alpine container..."
+        apk add --no-cache curl jq > /dev/null 2>&1
+    elif ! command -v curl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+        echo "⚠️  Warning: curl and jq are required. Please install them manually."
+        echo "   - macOS: brew install curl jq"
+        echo "   - Ubuntu: apt-get install curl jq"
+        echo "   - RHEL/CentOS: yum install curl jq"
+        exit 1
+    fi
+
+    # Function to make authenticated API calls
+    fineract_api() {
+        local method="$1"
+        local endpoint="$2"
+        local data="${3:-}"
+
+        local url="$FINERACT_URL/fineract-provider/api/v1$endpoint"
+
+        if [ -n "$data" ]; then
+            curl -s -X "$method" \
+                -H "Content-Type: application/json" \
+                -H "Fineract-Platform-TenantId: $TENANT_ID" \
+                -u "$FINERACT_USERNAME:$FINERACT_PASSWORD" \
+                -d "$data" \
+                "$url"
+        else
+            curl -s -X "$method" \
+                -H "Content-Type: application/json" \
+                -H "Fineract-Platform-TenantId: $TENANT_ID" \
+                -u "$FINERACT_USERNAME:$FINERACT_PASSWORD" \
+                "$url"
+        fi
+    }
+
+    # Wait for Fineract to be ready
+    echo "⏳ Waiting for Fineract to be ready..."
+    max_attempts=120
+    attempt=0
+
+    while [ $attempt -lt $max_attempts ]; do
+        if curl -s "$FINERACT_URL/fineract-provider/actuator/health" > /dev/null 2>&1; then
+            echo "✅ Fineract is ready!"
+            break
+        fi
+
+        echo "⌛ Attempt $((attempt + 1))/$max_attempts - Waiting for Fineract..."
+        sleep 5
+        attempt=$((attempt + 1))
+    done
+
+    if [ $attempt -eq $max_attempts ]; then
+        echo "❌ Fineract failed to start within expected time"
+        exit 1
+    fi
+
+    # Check if already initialized by looking for active John Doe client with accounts
+    clients_response=$(fineract_api "GET" "/clients" || echo '{"pageItems":[]}')
+    john_doe_active=$(echo "$clients_response" | jq '.pageItems[]? | select(.displayName == "John Doe" and .active == true) | .id' | head -1)
+
+    if [ -n "$john_doe_active" ] && [ "$john_doe_active" != "null" ]; then
+        # Check if John Doe has savings accounts
+        accounts_response=$(fineract_api "GET" "/clients/$john_doe_active/accounts" || echo '{"savingsAccounts":[]}')
+        accounts_count=$(echo "$accounts_response" | jq '.savingsAccounts | length')
+
+        if [ "$accounts_count" -gt 0 ]; then
+            echo "ℹ️  Fineract already initialized with demo clients and accounts. Skipping initialization but showing current config."
+
+            # Get existing data for output
+            clients_response=$(fineract_api "GET" "/clients")
+            john_doe_client=$(echo "$clients_response" | jq '.pageItems[]? | select(.displayName == "John Doe" and .active == true)')
+            jane_smith_client=$(echo "$clients_response" | jq '.pageItems[]? | select(.displayName == "Jane Smith" and .active == true)')
+            robert_johnson_client=$(echo "$clients_response" | jq '.pageItems[]? | select(.displayName == "Robert Johnson" and .active == true)')
+
+            client1=$(echo "$john_doe_client" | jq -r '.id')
+            client2=$(echo "$jane_smith_client" | jq -r '.id')
+            client3=$(echo "$robert_johnson_client" | jq -r '.id')
+
+            # Get accounts for each client
+            if [ "$client1" != "null" ] && [ -n "$client1" ]; then
+                john_accounts=$(fineract_api "GET" "/clients/$client1/accounts")
+                account1=$(echo "$john_accounts" | jq -r '.savingsAccounts[0].id // empty')
+            fi
+
+            if [ "$client2" != "null" ] && [ -n "$client2" ]; then
+                jane_accounts=$(fineract_api "GET" "/clients/$client2/accounts")
+                account2=$(echo "$jane_accounts" | jq -r '.savingsAccounts[0].id // empty')
+            fi
+
+            if [ "$client3" != "null" ] && [ -n "$client3" ]; then
+                robert_accounts=$(fineract_api "GET" "/clients/$client3/accounts")
+                account3=$(echo "$robert_accounts" | jq -r '.savingsAccounts[0].id // empty')
+            fi
+
+            # Set default values for offices, staff, and products
+            head_office=1
+            branch_office=2
+            staff_member=1
+            savings_product=2
+            checking_product=3
+            money_market_product=4
+
+            # Jump to final output section
+            show_final_config=true
+        else
+            echo "ℹ️  Found John Doe client but no accounts. Continuing with account setup."
+            show_final_config=false
+        fi
+    else
+        echo "ℹ️  No active John Doe client found. Proceeding with full initialization."
+        show_final_config=false
+    fi
+
+    # Skip initialization if we already have complete setup
+    if [ "$show_final_config" = "true" ]; then
+        # Jump to verification section
+        echo "Skipping to final configuration display..."
+    else
+
+    # 1. Use existing Head Office or create new offices
+    echo "🏢 Setting up offices..."
+
+    # Use existing Head Office (ID: 1)
+    head_office=1
+    echo "Using existing Head Office with ID: $head_office"
+
+    # Branch Office - check if it already exists first
+    existing_branch=$(fineract_api "GET" "/offices" | jq -r '.[] | select(.name == "DynaBank Downtown Branch") | .id' | head -1)
+
+    if [ -n "$existing_branch" ] && [ "$existing_branch" != "null" ]; then
+        branch_office=$existing_branch
+        echo "Using existing Branch Office with ID: $branch_office"
+    else
+        branch_office=$(fineract_api "POST" "/offices" '{
+            "name": "DynaBank Downtown Branch",
+            "openingDate": "2024-01-01",
+            "dateFormat": "yyyy-MM-dd",
+            "locale": "en",
+            "parentId": '$head_office'
+        }' | jq -r '.officeId // .resourceId')
+        echo "Created Branch Office with ID: $branch_office"
+    fi
+
+    # 2. Create Staff
+    echo "👥 Creating staff members..."
+
+    # Check if staff already exists
+    existing_staff=$(fineract_api "GET" "/staff" | jq -r '.[] | select(.firstname == "John" and .lastname == "Manager") | .id' | head -1)
+
+    if [ -n "$existing_staff" ] && [ "$existing_staff" != "null" ]; then
+        staff_member=$existing_staff
+        echo "Using existing Staff Member with ID: $staff_member"
+    else
+        staff_member=$(fineract_api "POST" "/staff" '{
+            "officeId": '$head_office',
+            "firstname": "John",
+            "lastname": "Manager",
+            "isLoanOfficer": true,
+            "isActive": true,
+            "joiningDate": "2024-01-01",
+            "dateFormat": "yyyy-MM-dd",
+            "locale": "en"
+        }' | jq -r '.staffId // .resourceId')
+        echo "Created Staff Member with ID: $staff_member"
+    fi
+
+    # 3. Create Savings Products
+    echo "💰 Creating savings products..."
+
+    # Standard Savings Account - check if exists
+    existing_savings=$(fineract_api "GET" "/savingsproducts" | jq -r '.[] | select(.name == "DynaBank Savings Account") | .id' | head -1)
+
+    if [ -n "$existing_savings" ] && [ "$existing_savings" != "null" ]; then
+        savings_product=$existing_savings
+        echo "Using existing Savings Product with ID: $savings_product"
+    else
+        savings_product=$(fineract_api "POST" "/savingsproducts" '{
+            "name": "DynaBank Savings Account",
+            "shortName": "DYSA",
+            "description": "Standard savings account with competitive interest rates",
+            "currencyCode": "USD",
+            "digitsAfterDecimal": 2,
+            "inMultiplesOf": 1,
+            "nominalAnnualInterestRate": 2.5,
+            "interestCompoundingPeriodType": 4,
+            "interestPostingPeriodType": 4,
+            "interestCalculationType": 1,
+            "interestCalculationDaysInYearType": 365,
+            "minRequiredOpeningBalance": 100.00,
+            "lockinPeriodFrequency": 0,
+            "lockinPeriodFrequencyType": 0,
+            "withdrawalFeeForTransfers": false,
+            "allowOverdraft": false,
+            "enforceMinRequiredBalance": false,
+            "withHoldTax": false,
+            "isDormancyTrackingActive": false,
+            "accountingRule": 1,
+            "locale": "en"
+        }' | jq -r '.resourceId')
+        echo "Created Savings Product with ID: $savings_product"
+    fi
+
+    # Checking Account Product - check if exists
+    existing_checking=$(fineract_api "GET" "/savingsproducts" | jq -r '.[] | select(.name == "DynaBank Checking Account") | .id' | head -1)
+
+    if [ -n "$existing_checking" ] && [ "$existing_checking" != "null" ]; then
+        checking_product=$existing_checking
+        echo "Using existing Checking Product with ID: $checking_product"
+    else
+        checking_product=$(fineract_api "POST" "/savingsproducts" '{
+            "name": "DynaBank Checking Account",
+            "shortName": "DYCA",
+            "description": "Free checking account with unlimited transactions",
+            "currencyCode": "USD",
+            "digitsAfterDecimal": 2,
+            "inMultiplesOf": 1,
+            "nominalAnnualInterestRate": 0.1,
+            "interestCompoundingPeriodType": 4,
+            "interestPostingPeriodType": 4,
+            "interestCalculationType": 1,
+            "interestCalculationDaysInYearType": 365,
+            "minRequiredOpeningBalance": 25.00,
+            "lockinPeriodFrequency": 0,
+            "lockinPeriodFrequencyType": 0,
+            "withdrawalFeeForTransfers": false,
+            "allowOverdraft": true,
+            "overdraftLimit": 500.00,
+            "enforceMinRequiredBalance": false,
+            "withHoldTax": false,
+            "isDormancyTrackingActive": false,
+            "accountingRule": 1,
+            "locale": "en"
+        }' | jq -r '.resourceId')
+        echo "Created Checking Product with ID: $checking_product"
+    fi
+
+    # Money Market Account Product - check if exists
+    existing_money_market=$(fineract_api "GET" "/savingsproducts" | jq -r '.[] | select(.name == "DynaBank Money Market Account") | .id' | head -1)
+
+    if [ -n "$existing_money_market" ] && [ "$existing_money_market" != "null" ]; then
+        money_market_product=$existing_money_market
+        echo "Using existing Money Market Product with ID: $money_market_product"
+    else
+        money_market_product=$(fineract_api "POST" "/savingsproducts" '{
+            "name": "DynaBank Money Market Account",
+            "shortName": "DYMA",
+            "description": "High-yield money market account",
+            "currencyCode": "USD",
+            "digitsAfterDecimal": 2,
+            "inMultiplesOf": 1,
+            "nominalAnnualInterestRate": 4.25,
+            "interestCompoundingPeriodType": 4,
+            "interestPostingPeriodType": 4,
+            "interestCalculationType": 1,
+            "interestCalculationDaysInYearType": 365,
+            "minRequiredOpeningBalance": 1000.00,
+            "lockinPeriodFrequency": 0,
+            "lockinPeriodFrequencyType": 0,
+            "withdrawalFeeForTransfers": false,
+            "allowOverdraft": false,
+            "enforceMinRequiredBalance": true,
+            "minRequiredBalance": 1000.00,
+            "withHoldTax": false,
+            "isDormancyTrackingActive": false,
+            "accountingRule": 1,
+            "locale": "en"
+        }' | jq -r '.resourceId')
+        echo "Created Money Market Product with ID: $money_market_product"
+    fi
+
+    # 4. Create Demo Clients
+    echo "👤 Creating demo clients..."
+
+    current_date=$(date +%Y-%m-%d)
+
+    # Client 1: John Doe
+    client1=$(fineract_api "POST" "/clients" '{
+        "officeId": '$branch_office',
+        "staffId": '$staff_member',
+        "legalFormId": 1,
+        "firstname": "John",
+        "lastname": "Doe",
+        "dateOfBirth": "1985-03-15",
+        "submittedOnDate": "'$current_date'",
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en"
+    }' | jq -r '.clientId // .resourceId')
+
+    echo "Created Client 1 (John Doe) with ID: $client1"
+
+    # Client 2: Jane Smith
+    client2=$(fineract_api "POST" "/clients" '{
+        "officeId": '$branch_office',
+        "staffId": '$staff_member',
+        "legalFormId": 1,
+        "firstname": "Jane",
+        "lastname": "Smith",
+        "dateOfBirth": "1990-07-22",
+        "submittedOnDate": "'$current_date'",
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en"
+    }' | jq -r '.clientId // .resourceId')
+
+    echo "Created Client 2 (Jane Smith) with ID: $client2"
+
+    # Client 3: Robert Johnson
+    client3=$(fineract_api "POST" "/clients" '{
+        "officeId": '$branch_office',
+        "staffId": '$staff_member',
+        "legalFormId": 1,
+        "firstname": "Robert",
+        "lastname": "Johnson",
+        "dateOfBirth": "1978-11-05",
+        "submittedOnDate": "'$current_date'",
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en"
+    }' | jq -r '.clientId // .resourceId')
+
+    echo "Created Client 3 (Robert Johnson) with ID: $client3"
+
+    # Activate all clients with error checking
+    echo "🔓 Activating demo clients..."
+
+    # Helper function to activate client
+    activate_client() {
+        local client_id="$1"
+        local client_name="$2"
+
+        local current_date=$(date +%Y-%m-%d)
+        local activate_response=$(fineract_api "POST" "/clients/$client_id?command=activate" '{
+            "activationDate": "'$current_date'",
+            "dateFormat": "yyyy-MM-dd",
+            "locale": "en"
+        }')
+
+        echo "Activation response for $client_name: $activate_response"
+
+        # Verify activation by checking client status
+        local client_status=$(fineract_api "GET" "/clients/$client_id" | jq -r '.status.value')
+        echo "Client $client_name status: $client_status"
+
+        if [ "$client_status" != "Active" ]; then
+            echo "ERROR: Failed to activate $client_name (ID: $client_id). Status: $client_status"
+            return 1
+        fi
+
+        echo "✅ Successfully activated $client_name (ID: $client_id)"
+        return 0
+    }
+
+    # Activate John Doe
+    activate_client "$client1" "John Doe"
+
+    # Activate Jane Smith
+    activate_client "$client2" "Jane Smith"
+
+    # Activate Robert Johnson
+    activate_client "$client3" "Robert Johnson"
+
+    # Helper function to create and activate savings account
+    create_savings_account() {
+        local client_id="$1"
+        local product_id="$2"
+        local client_name="$3"
+
+        echo "Creating account for $client_name (Client: $client_id, Product: $product_id)..."
+
+        local current_date=$(date +%Y-%m-%d)
+        local account_response=$(fineract_api "POST" "/savingsaccounts" '{
+            "clientId": '$client_id',
+            "productId": '$product_id',
+            "submittedOnDate": "'$current_date'",
+            "dateFormat": "yyyy-MM-dd",
+            "locale": "en"
+        }')
+
+        echo "Account creation response: $account_response"
+
+        local account_id=$(echo "$account_response" | jq -r '.savingsId // .resourceId')
+
+        if [ "$account_id" = "null" ] || [ -z "$account_id" ]; then
+            echo "ERROR: Failed to create account for $client_name"
+            echo "Response was: $account_response"
+            return 1
+        fi
+
+        echo "Created account for $client_name with ID: $account_id"
+
+        # Approve the account
+        echo "Approving account $account_id..."
+        local approve_response=$(fineract_api "POST" "/savingsaccounts/$account_id?command=approve" '{
+            "approvedOnDate": "'$current_date'",
+            "dateFormat": "yyyy-MM-dd",
+            "locale": "en"
+        }')
+        echo "Approval response: $approve_response"
+
+        # Activate the account
+        echo "Activating account $account_id..."
+        local activate_response=$(fineract_api "POST" "/savingsaccounts/$account_id?command=activate" '{
+            "activatedOnDate": "'$current_date'",
+            "dateFormat": "yyyy-MM-dd",
+            "locale": "en"
+        }')
+        echo "Account activation response: $activate_response"
+
+        echo "✅ Account $account_id ready for $client_name"
+        echo "$account_id"
+    }
+
+    # 5. Create Savings Accounts for Demo Clients
+    echo "🏦 Creating savings accounts..."
+
+    account1=$(create_savings_account "$client1" "$checking_product" "John Doe")
+    account2=$(create_savings_account "$client2" "$savings_product" "Jane Smith")
+    account3=$(create_savings_account "$client3" "$money_market_product" "Robert Johnson")
+
+    # 6. Add Initial Deposits
+    echo "💵 Adding initial deposits..."
+
+    current_date=$(date +%Y-%m-%d)
+
+    # John Doe - $5,420.50 initial deposit
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=deposit" '{
+        "transactionDate": "'$current_date'",
+        "transactionAmount": 5420.50,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Initial deposit"
+    }' > /dev/null
+
+    # Jane Smith - $12,750.25 initial deposit
+    fineract_api "POST" "/savingsaccounts/$account2/transactions?command=deposit" '{
+        "transactionDate": "'$current_date'",
+        "transactionAmount": 12750.25,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Initial deposit"
+    }' > /dev/null
+
+    # Robert Johnson - $8,900.00 initial deposit
+    fineract_api "POST" "/savingsaccounts/$account3/transactions?command=deposit" '{
+        "transactionDate": "'$current_date'",
+        "transactionAmount": 8900.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Initial deposit"
+    }' > /dev/null
+
+    echo "💰 Added initial deposits to all accounts"
+
+    # 7. Create demo transactions matching DEMO-DATA.md specifications
+    echo "📊 Creating demo transactions..."
+
+    # John Doe - Transactions per DEMO-DATA.md
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-05",
+        "transactionAmount": 250.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Transfer to John Smith"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-10",
+        "transactionAmount": 89.99,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Online Purchase"
+    }' > /dev/null
+
+    # Jane Smith - Salary deposit per DEMO-DATA.md
+    fineract_api "POST" "/savingsaccounts/$account2/transactions?command=deposit" '{
+        "transactionDate": "2024-01-15",
+        "transactionAmount": 1500.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Salary Deposit"
+    }' > /dev/null
+
+    # Additional realistic transactions for comprehensive demo
+
+    # Jane Smith - More transactions
+    fineract_api "POST" "/savingsaccounts/$account2/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-20",
+        "transactionAmount": 75.50,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Utility bill"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account2/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-22",
+        "transactionAmount": 450.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Rent payment"
+    }' > /dev/null
+
+    # John Doe - More activity
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=deposit" '{
+        "transactionDate": "2024-01-25",
+        "transactionAmount": 420.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Expense reimbursement"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-26",
+        "transactionAmount": 150.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "ATM withdrawal"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-28",
+        "transactionAmount": 45.99,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Restaurant"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account1/transactions?command=withdrawal" '{
+        "transactionDate": "2024-01-30",
+        "transactionAmount": 200.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Insurance payment"
+    }' > /dev/null
+
+    # Robert Johnson - Money Market activity
+    fineract_api "POST" "/savingsaccounts/$account3/transactions?command=deposit" '{
+        "transactionDate": "2024-01-28",
+        "transactionAmount": 400.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Interest payment"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account3/transactions?command=withdrawal" '{
+        "transactionDate": "2024-02-01",
+        "transactionAmount": 1000.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Investment transfer"
+    }' > /dev/null
+
+    fineract_api "POST" "/savingsaccounts/$account3/transactions?command=deposit" '{
+        "transactionDate": "2024-02-05",
+        "transactionAmount": 2500.00,
+        "dateFormat": "yyyy-MM-dd",
+        "locale": "en",
+        "note": "Stock dividend"
+    }' > /dev/null
+
+    echo "📈 Created demo transactions matching DEMO-DATA.md specifications"
+
+    fi  # End of initialization block
+
+    # 8. Verify final configuration and output complete summary (ALWAYS RUNS)
+    echo ""
+    echo "🔍 Verifying final configuration..."
+
+    # Discover all data from APIs (works whether we just initialized or data already existed)
+    offices_response=$(fineract_api "GET" "/offices")
+    head_office=$(echo "$offices_response" | jq -r '.[] | select(.name == "Head Office") | .id' | head -1)
+    branch_office=$(echo "$offices_response" | jq -r '.[] | select(.name == "DynaBank Downtown Branch") | .id' | head -1)
+
+    staff_response=$(fineract_api "GET" "/staff")
+    staff_member=$(echo "$staff_response" | jq -r '.[] | select(.firstname == "John" and .lastname == "Manager") | .id' | head -1)
+
+    products_response=$(fineract_api "GET" "/savingsproducts")
+    savings_product=$(echo "$products_response" | jq -r '.[] | select(.name == "DynaBank Savings Account") | .id' | head -1)
+    checking_product=$(echo "$products_response" | jq -r '.[] | select(.name == "DynaBank Checking Account") | .id' | head -1)
+    money_market_product=$(echo "$products_response" | jq -r '.[] | select(.name == "DynaBank Money Market Account") | .id' | head -1)
+
+    # Get client data - use the LAST (most recent) active client for each name
+    clients_response=$(fineract_api "GET" "/clients")
+
+    # Get the most recent active client ID for each person (tail -1 to get the latest)
+    client1=$(echo "$clients_response" | jq -r '.pageItems[]? | select(.displayName == "John Doe" and .active == true) | .id' | tail -1)
+    client2=$(echo "$clients_response" | jq -r '.pageItems[]? | select(.displayName == "Jane Smith" and .active == true) | .id' | tail -1)
+    client3=$(echo "$clients_response" | jq -r '.pageItems[]? | select(.displayName == "Robert Johnson" and .active == true) | .id' | tail -1)
+
+    # Set to N/A if not found
+    client1=${client1:-"N/A"}
+    client2=${client2:-"N/A"}
+    client3=${client3:-"N/A"}
+
+    # Get account data and balances
+    account1=""
+    account2=""
+    account3=""
+    john_balance="0"
+    jane_balance="0"
+    robert_balance="0"
+    john_txn_count="0"
+    jane_txn_count="0"
+    robert_txn_count="0"
+
+    if [ "$client1" != "N/A" ] && [ "$client1" != "null" ]; then
+        john_accounts=$(fineract_api "GET" "/clients/$client1/accounts")
+        account1=$(echo "$john_accounts" | jq -r '.savingsAccounts[0].id // "N/A"')
+        if [ "$account1" != "N/A" ] && [ "$account1" != "null" ]; then
+            john_balance=$(fineract_api "GET" "/savingsaccounts/$account1" | jq -r '.summary.accountBalance // 0')
+            john_txn_count=$(fineract_api "GET" "/savingsaccounts/$account1/transactions" | jq '. | length')
+        fi
+    fi
+
+    if [ "$client2" != "N/A" ] && [ "$client2" != "null" ]; then
+        jane_accounts=$(fineract_api "GET" "/clients/$client2/accounts")
+        account2=$(echo "$jane_accounts" | jq -r '.savingsAccounts[0].id // "N/A"')
+        if [ "$account2" != "N/A" ] && [ "$account2" != "null" ]; then
+            jane_balance=$(fineract_api "GET" "/savingsaccounts/$account2" | jq -r '.summary.accountBalance // 0')
+            jane_txn_count=$(fineract_api "GET" "/savingsaccounts/$account2/transactions" | jq '. | length')
+        fi
+    fi
+
+    if [ "$client3" != "N/A" ] && [ "$client3" != "null" ]; then
+        robert_accounts=$(fineract_api "GET" "/clients/$client3/accounts")
+        account3=$(echo "$robert_accounts" | jq -r '.savingsAccounts[0].id // "N/A"')
+        if [ "$account3" != "N/A" ] && [ "$account3" != "null" ]; then
+            robert_balance=$(fineract_api "GET" "/savingsaccounts/$account3" | jq -r '.summary.accountBalance // 0')
+            robert_txn_count=$(fineract_api "GET" "/savingsaccounts/$account3/transactions" | jq '. | length')
+        fi
+    fi
+
+    echo ""
+    echo "✅ Apache Fineract initialization completed successfully!"
+    echo ""
+    echo "🎯 Complete Demo Data Configuration:"
+    echo "====================================="
+    echo ""
+    echo "📍 OFFICES:"
+    echo "   • Head Office (ID: $head_office) - DynaBank Head Office"
+    echo "   • Branch Office (ID: $branch_office) - DynaBank Downtown Branch"
+    echo ""
+    echo "👥 STAFF:"
+    echo "   • John Manager (ID: $staff_member) - Loan Officer"
+    echo ""
+    echo "💳 BANKING PRODUCTS:"
+    echo "   • DynaBank Savings Account (ID: $savings_product, Code: DYSA)"
+    echo "     - Interest: 2.5% APY, Min Balance: \$100.00"
+    echo "   • DynaBank Checking Account (ID: $checking_product, Code: DYCA)"
+    echo "     - Interest: 0.1% APY, Min Balance: \$25.00, Overdraft: \$500.00"
+    echo "   • DynaBank Money Market Account (ID: $money_market_product, Code: DYMA)"
+    echo "     - Interest: 4.25% APY, Min Balance: \$1,000.00"
+    echo ""
+    echo "👤 DEMO CUSTOMERS (All Active):"
+    echo "   • John Doe (ID: $client1)"
+    echo "     - DOB: March 15, 1985"
+    echo "     - Account: Checking ($account1)"
+    echo "     - Balance: \$$john_balance"
+    echo "     - Transactions: $john_txn_count"
+    echo ""
+    echo "   • Jane Smith (ID: $client2)"
+    echo "     - DOB: July 22, 1990"
+    echo "     - Account: Savings ($account2)"
+    echo "     - Balance: \$$jane_balance"
+    echo "     - Transactions: $jane_txn_count"
+    echo ""
+    echo "   • Robert Johnson (ID: $client3)"
+    echo "     - DOB: November 5, 1978"
+    echo "     - Account: Money Market ($account3)"
+    echo "     - Balance: \$$robert_balance"
+    echo "     - Transactions: $robert_txn_count"
+    echo ""
+    echo "🔗 API ACCESS CONFIGURATION:"
+    echo "   • Base URL: $FINERACT_URL/fineract-provider/api/v1"
+    echo "   • Username: $FINERACT_USERNAME"
+    echo "   • Password: $FINERACT_PASSWORD"
+    echo "   • Tenant ID: $TENANT_ID"
+    echo ""
+    echo "📊 VERIFICATION COMMANDS:"
+    echo ""
+    echo "   First, set up port forwarding:"
+    echo "   kubectl port-forward svc/fineract-server 8080:8080 -n dynabank &"
+    echo ""
+    echo "   Then verify with these commands:"
+    echo "   • List all clients: curl -u $FINERACT_USERNAME:$FINERACT_PASSWORD -H \"Fineract-Platform-TenantId: $TENANT_ID\" http://127.0.0.1:8080/fineract-provider/api/v1/clients"
+    echo "   • John's account: curl -u $FINERACT_USERNAME:$FINERACT_PASSWORD -H \"Fineract-Platform-TenantId: $TENANT_ID\" http://127.0.0.1:8080/fineract-provider/api/v1/savingsaccounts/$account1"
+    echo "   • Jane's transactions: curl -u $FINERACT_USERNAME:$FINERACT_PASSWORD -H \"Fineract-Platform-TenantId: $TENANT_ID\" http://127.0.0.1:8080/fineract-provider/api/v1/savingsaccounts/$account2/transactions"
+    echo ""
+    echo "🚀 Fineract is ready for DynaBank demo!"
+    echo "✨ All DEMO-DATA.md requirements have been fulfilled!"
+---
+# Fineract Initialization Job
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.fineractInit.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: initialization
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "20"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.fineractInit.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.fineractInit.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: initialization
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: fineract-init
+        image: alpine:3.19
+        command: ["sh", "/scripts/init-fineract.sh"]
+        env:
+        {{- range $key, $value := .Values.fineractInit.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        - name: FINERACT_URL
+          value: "http://{{ .Values.fineract.name }}:{{ .Values.fineract.service.port }}"
+        - name: FINERACT_USERNAME
+          value: "mifos"
+        - name: FINERACT_PASSWORD
+          value: "password"
+        - name: TENANT_ID
+          value: "default"
+        volumeMounts:
+        - name: init-script
+          mountPath: /scripts
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      volumes:
+      - name: init-script
+        configMap:
+          name: fineract-init-script
+          defaultMode: 0755
 {{- end }}

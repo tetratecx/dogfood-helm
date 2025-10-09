@@ -3,93 +3,138 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: fineract-tenants-db-secret
+  name: {{ .Values.mariadb.name }}-secret
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 type: Opaque
 data:
-  username: {{ "root" | b64enc }}
-  password: {{ "mysql" | b64enc }}
+  username: {{ .Values.mariadb.auth.username | b64enc }}
+  password: {{ .Values.mariadb.auth.rootPassword | b64enc }}
+  database: {{ .Values.mariadb.auth.database | b64enc }}
+---
+# Keep the old secret name for backward compatibility with Fineract
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fineract-tenants-db-secret
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: Opaque
+data:
+  username: {{ .Values.mariadb.auth.username | b64enc }}
+  password: {{ .Values.mariadb.auth.rootPassword | b64enc }}
+  database: {{ .Values.mariadb.auth.database | b64enc }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fineractmysql-initdb
+  name: {{ .Values.mariadb.name }}-initdb
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fineract-server
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 data:
   init.sql: |
     # create databases
-    CREATE DATABASE IF NOT EXISTS `fineract_tenants`;
+    CREATE DATABASE IF NOT EXISTS `{{ .Values.mariadb.auth.database }}`;
     CREATE DATABASE IF NOT EXISTS `fineract_default`;
     # create root user and grant rights
-    GRANT ALL ON *.* TO 'root'@'%';
+    GRANT ALL ON *.* TO '{{ .Values.mariadb.auth.username }}'@'%';
 ---
+{{- if .Values.mariadb.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: fineractmysql-persistent-storage
+  name: {{ .Values.mariadb.name }}-pvc
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fineract-server
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 spec:
   accessModes:
-    - ReadWriteOnce
+    - {{ .Values.persistence.accessMode }}
+  {{- if .Values.mariadb.persistence.storageClass }}
+  storageClassName: {{ .Values.mariadb.persistence.storageClass }}
+  {{- end }}
   resources:
     requests:
-      storage: 5Gi
+      storage: {{ .Values.mariadb.persistence.size }}
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: fineractmysql
+  name: {{ .Values.mariadb.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fineract-server
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 spec:
-  clusterIP: None
+  type: ClusterIP
   ports:
-    - port: 3306
+    - port: {{ .Values.mariadb.service.port }}
+      targetPort: mysql
+      protocol: TCP
+      name: mysql
   selector:
-    app: fineract-server
-    tier: fineractmysql
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: {{ .Values.mariadb.name }}
+  namespace: {{ include "dynabank.namespace" . }}
   labels:
-    app: fineract-server
-  name: fineractmysql
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 spec:
-  selector:
-    matchLabels:
-      app: fineract-server
-      tier: fineractmysql
+  replicas: 1
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
   template:
     metadata:
       labels:
-        app: fineract-server
-        tier: fineractmysql
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
     spec:
       containers:
-        - image: mariadb:11.4
-          name: mysql
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1000m"
-            limits:
-              memory: "5Gi"
-              cpu: "2000m"
+        - name: mysql
+          image: {{ include "dynabank.image" .Values.mariadb }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: fineract-tenants-db-secret
+                  name: {{ .Values.mariadb.name }}-secret
                   key: password
+            - name: MARIADB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mariadb.name }}-secret
+                  key: database
           livenessProbe:
             exec:
-              command: ["sh","-c","mariadb-admin ping -h localhost -uroot -p${MARIADB_ROOT_PASSWORD}"]
+              command:
+                - sh
+                - -c
+                - mariadb-admin ping -h localhost -uroot -p${MARIADB_ROOT_PASSWORD}
             failureThreshold: 10
             timeoutSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
           readinessProbe:
             exec:
               command:
@@ -99,19 +144,23 @@ spec:
             failureThreshold: 10
             initialDelaySeconds: 5
             periodSeconds: 5
-          ports:
-            - containerPort: 3306
-              name: fineractmysql
+            timeoutSeconds: 3
+          resources:
+            {{- include "dynabank.resources" .Values.mariadb | nindent 12 }}
           volumeMounts:
-            - name: fineractmysql-initdb
+            - name: initdb
               mountPath: /docker-entrypoint-initdb.d/
-            - name: fineractmysql-persistent-storage
+            {{- if .Values.mariadb.persistence.enabled }}
+            - name: data
               mountPath: /var/lib/mysql/
+            {{- end }}
       volumes:
-        - name: fineractmysql-initdb
+        - name: initdb
           configMap:
-            name: fineractmysql-initdb
-        - name: fineractmysql-persistent-storage
+            name: {{ .Values.mariadb.name }}-initdb
+        {{- if .Values.mariadb.persistence.enabled }}
+        - name: data
           persistentVolumeClaim:
-            claimName: fineractmysql-persistent-storage
+            claimName: {{ .Values.mariadb.name }}-pvc
+        {{- end }}
 {{- end }}
