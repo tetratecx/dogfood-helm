@@ -853,6 +853,8 @@ spec:
   activeDeadlineSeconds: {{ .Values.fineractInit.activeDeadlineSeconds }}
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: initialization
