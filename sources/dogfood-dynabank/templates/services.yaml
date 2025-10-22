@@ -1,0 +1,259 @@
+{{- if .Values.components.fraudService }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.fraudService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fraud-detection
+spec:
+  replicas: {{ .Values.fraudService.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: fraud-detection
+  template:
+    metadata:
+      labels:
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: fraud-detection
+    spec:
+      containers:
+      - name: fraud-service
+        image: {{ include "dynabank.image" .Values.fraudService }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.fraudService.service.targetPort }}
+          protocol: TCP
+        env:
+        {{- range $key, $value := .Values.fraudService.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.fraudService.healthCheck.liveness }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.fraudService.healthCheck.liveness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.fraudService.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.fraudService.healthCheck.liveness.periodSeconds }}
+          timeoutSeconds: 5
+          failureThreshold: 3
+        {{- end }}
+        {{- if .Values.fraudService.healthCheck.readiness }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.fraudService.healthCheck.readiness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.fraudService.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.fraudService.healthCheck.readiness.periodSeconds }}
+          timeoutSeconds: 3
+          failureThreshold: 3
+        {{- end }}
+        resources:
+          {{- include "dynabank.resources" .Values.fraudService | nindent 10 }}
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.fraudService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fraud-detection
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: {{ .Values.fraudService.service.port }}
+    targetPort: http
+    protocol: TCP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: fraud-detection
+{{- end }}
+---
+{{- if .Values.components.notificationService }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.notificationService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: notification
+spec:
+  replicas: {{ .Values.notificationService.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: notification
+  template:
+    metadata:
+      labels:
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: notification
+    spec:
+      containers:
+      - name: notification-service
+        image: {{ include "dynabank.image" .Values.notificationService }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.notificationService.service.http.targetPort }}
+          protocol: TCP
+        - name: websocket
+          containerPort: {{ .Values.notificationService.service.websocket.targetPort }}
+          protocol: TCP
+        env:
+        {{- range $key, $value := .Values.notificationService.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.notificationService.healthCheck.liveness }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.notificationService.healthCheck.liveness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.notificationService.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.notificationService.healthCheck.liveness.periodSeconds }}
+          timeoutSeconds: 5
+          failureThreshold: 3
+        {{- end }}
+        {{- if .Values.notificationService.healthCheck.readiness }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.notificationService.healthCheck.readiness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.notificationService.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.notificationService.healthCheck.readiness.periodSeconds }}
+          timeoutSeconds: 3
+          failureThreshold: 3
+        {{- end }}
+        resources:
+          {{- include "dynabank.resources" .Values.notificationService | nindent 10 }}
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.notificationService.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: notification
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: {{ .Values.notificationService.service.http.port }}
+    targetPort: http
+    protocol: TCP
+  - name: websocket
+    port: {{ .Values.notificationService.service.websocket.port }}
+    targetPort: websocket
+    protocol: TCP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: notification
+{{- end }}
+---
+{{- if .Values.components.webPortal }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.webPortal.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: {{ .Values.webPortal.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: frontend
+  template:
+    metadata:
+      labels:
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: frontend
+    spec:
+      containers:
+      - name: web-portal
+        image: {{ include "dynabank.image" .Values.webPortal }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.webPortal.service.targetPort }}
+          protocol: TCP
+        env:
+        {{- range $key, $value := .Values.webPortal.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.webPortal.healthCheck.liveness }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.webPortal.healthCheck.liveness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.webPortal.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.webPortal.healthCheck.liveness.periodSeconds }}
+          timeoutSeconds: 5
+          failureThreshold: 3
+        {{- end }}
+        {{- if .Values.webPortal.healthCheck.readiness }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.webPortal.healthCheck.readiness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.webPortal.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.webPortal.healthCheck.readiness.periodSeconds }}
+          timeoutSeconds: 3
+          failureThreshold: 3
+        {{- end }}
+        resources:
+          {{- include "dynabank.resources" .Values.webPortal | nindent 10 }}
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.webPortal.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: {{ .Values.webPortal.service.port }}
+    targetPort: http
+    protocol: TCP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+{{- end }}

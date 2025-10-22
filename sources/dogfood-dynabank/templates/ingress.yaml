@@ -1,0 +1,40 @@
+{{- if .Values.components.ingress }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "dynabank.fullname" . }}-ingress
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: networking
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if and .Values.ingress.tls.enabled .Values.ingress.tls.secretName }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.rules }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+        - path: {{ .path }}
+          pathType: {{ .pathType }}
+          backend:
+            service:
+              name: {{ .service.name }}
+              port:
+                number: {{ .service.port }}
+        {{- end }}
+    {{- end }}
+{{- end }}

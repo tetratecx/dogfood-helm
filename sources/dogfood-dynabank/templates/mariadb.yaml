@@ -1,0 +1,166 @@
+{{- if .Values.components.mariadb }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.mariadb.name }}-secret
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: Opaque
+data:
+  username: {{ .Values.mariadb.auth.username | b64enc }}
+  password: {{ .Values.mariadb.auth.rootPassword | b64enc }}
+  database: {{ .Values.mariadb.auth.database | b64enc }}
+---
+# Keep the old secret name for backward compatibility with Fineract
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fineract-tenants-db-secret
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: Opaque
+data:
+  username: {{ .Values.mariadb.auth.username | b64enc }}
+  password: {{ .Values.mariadb.auth.rootPassword | b64enc }}
+  database: {{ .Values.mariadb.auth.database | b64enc }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.mariadb.name }}-initdb
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+data:
+  init.sql: |
+    # create databases
+    CREATE DATABASE IF NOT EXISTS `{{ .Values.mariadb.auth.database }}`;
+    CREATE DATABASE IF NOT EXISTS `fineract_default`;
+    # create root user and grant rights
+    GRANT ALL ON *.* TO '{{ .Values.mariadb.auth.username }}'@'%';
+---
+{{- if .Values.mariadb.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.mariadb.name }}-pvc
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode }}
+  {{- if .Values.mariadb.persistence.storageClass }}
+  storageClassName: {{ .Values.mariadb.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.mariadb.persistence.size }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mariadb.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.mariadb.service.port }}
+      targetPort: mysql
+      protocol: TCP
+      name: mysql
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mariadb.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+        - name: mysql
+          image: {{ include "dynabank.image" .Values.mariadb }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mariadb.name }}-secret
+                  key: password
+            - name: MARIADB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mariadb.name }}-secret
+                  key: database
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mariadb-admin ping -h localhost -uroot -p${MARIADB_ROOT_PASSWORD}
+            failureThreshold: 10
+            timeoutSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mariadb-admin ping -uroot -p${MARIADB_ROOT_PASSWORD}
+            failureThreshold: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            {{- include "dynabank.resources" .Values.mariadb | nindent 12 }}
+          volumeMounts:
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d/
+            {{- if .Values.mariadb.persistence.enabled }}
+            - name: data
+              mountPath: /var/lib/mysql/
+            {{- end }}
+      volumes:
+        - name: initdb
+          configMap:
+            name: {{ .Values.mariadb.name }}-initdb
+        {{- if .Values.mariadb.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.mariadb.name }}-pvc
+        {{- end }}
+{{- end }}

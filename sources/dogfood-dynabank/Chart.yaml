@@ -1,0 +1,32 @@
+apiVersion: v2
+name: dynabank
+description: Complete DynaBank Demo - Banking microservices platform with Apache Fineract core banking
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - banking
+  - microservices
+  - demo
+  - api-gateway
+  - service-mesh
+  - fineract
+  - apache-fineract
+  - kafka
+  - redis
+  - mariadb
+home: https://github.com/tetrateio/dynabank-demo
+maintainers:
+  - name: DynaBank Team
+    email: team@dynabank.demo
+  - name: Tetrate
+    email: hello@tetrate.io
+sources:
+  - https://github.com/tetrateio/dynabank-demo
+dependencies: []
+engine: gotpl
+appVersion: "1.0.0"
+kubeVersion: ">=1.20.0-0"
+annotations:
+  category: Banking
+  licenses: Apache-2.0

@@ -1,0 +1,108 @@
+{{- if .Values.components.transactionApi }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.transactionApi.name }}-credentials
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend-api
+type: Opaque
+data:
+  fineract-password: {{ .Values.transactionApi.env.FINERACT_PASSWORD | b64enc }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.transactionApi.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend-api
+spec:
+  replicas: {{ .Values.transactionApi.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dynabank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend-api
+  template:
+    metadata:
+      labels:
+        {{- include "dynabank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend-api
+    spec:
+      containers:
+      - name: transaction-api
+        image: {{ include "dynabank.image" .Values.transactionApi }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.transactionApi.service.http.targetPort }}
+          protocol: TCP
+        - name: metrics
+          containerPort: {{ .Values.transactionApi.service.metrics.targetPort }}
+          protocol: TCP
+        env:
+        {{- range $key, $value := .Values.transactionApi.env }}
+        {{- if ne $key "FINERACT_PASSWORD" }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+        - name: FINERACT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.transactionApi.name }}-credentials
+              key: fineract-password
+        {{- if .Values.transactionApi.healthCheck.liveness }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.transactionApi.healthCheck.liveness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.transactionApi.healthCheck.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.transactionApi.healthCheck.liveness.periodSeconds }}
+          timeoutSeconds: 5
+          failureThreshold: 3
+        {{- end }}
+        {{- if .Values.transactionApi.healthCheck.readiness }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.transactionApi.healthCheck.readiness.path }}
+            port: http
+          initialDelaySeconds: {{ .Values.transactionApi.healthCheck.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.transactionApi.healthCheck.readiness.periodSeconds }}
+          timeoutSeconds: 3
+          failureThreshold: 3
+        {{- end }}
+        resources:
+          {{- include "dynabank.resources" .Values.transactionApi | nindent 10 }}
+        {{- if .Values.transactionApi.securityContext }}
+        securityContext:
+          {{- include "dynabank.securityContext" .Values.transactionApi | nindent 10 }}
+        {{- end }}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.transactionApi.name }}
+  namespace: {{ include "dynabank.namespace" . }}
+  labels:
+    {{- include "dynabank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend-api
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: {{ .Values.transactionApi.service.http.port }}
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: {{ .Values.transactionApi.service.metrics.port }}
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    {{- include "dynabank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: backend-api
+{{- end }}
