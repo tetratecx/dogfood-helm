@@ -32,6 +32,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: backend-api
     spec:
+      serviceAccountName: {{ .Values.transactionApi.serviceAccount.name | default (printf "%s-sa" .Values.transactionApi.name) }}
       containers:
       - name: transaction-api
         image: {{ include "dynabank.image" .Values.transactionApi }}

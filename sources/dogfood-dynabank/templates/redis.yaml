@@ -59,6 +59,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: cache
     spec:
+      serviceAccountName: {{ .Values.redis.serviceAccount.name | default (printf "%s-sa" .Values.redis.name) }}
       containers:
       - name: redis
         image: {{ include "dynabank.image" .Values.redis }}

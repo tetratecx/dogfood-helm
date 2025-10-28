@@ -89,6 +89,9 @@ mariadb:
       cpu: "500m"
   service:
     port: 3306
+  serviceAccount:
+    name: ""  # defaults to fineractmysql-sa
+    annotations: {}
 
 # Redis Configuration
 redis:
@@ -112,6 +115,9 @@ redis:
       cpu: "250m"
   service:
     port: 6379
+  serviceAccount:
+    name: ""  # defaults to redis-sa
+    annotations: {}
 
 # Kafka Configuration
 kafka:
@@ -156,6 +162,9 @@ kafka:
       cpu: "500m"
   service:
     port: 9092
+  serviceAccount:
+    name: ""  # defaults to kafka-sa
+    annotations: {}
 
 # Zookeeper Configuration (for Kafka)
 zookeeper:
@@ -215,6 +224,9 @@ fineract:
     path: "/fineract-provider/actuator/health"
     initialDelaySeconds: 180
     periodSeconds: 30
+  serviceAccount:
+    name: ""  # defaults to fineract-server-sa
+    annotations: {}
 
 # Fineract Initialization Job
 fineractInit:
@@ -279,6 +291,9 @@ transactionApi:
     runAsUser: 1000
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
+  serviceAccount:
+    name: ""  # defaults to transaction-api-sa
+    annotations: {}
 
 # Fraud Service Configuration
 fraudService:
@@ -315,6 +330,9 @@ fraudService:
       path: "/ready"
       initialDelaySeconds: 5
       periodSeconds: 5
+  serviceAccount:
+    name: ""  # defaults to fraud-service-sa
+    annotations: {}
 
 # Notification Service Configuration
 notificationService:
@@ -358,6 +376,9 @@ notificationService:
       path: "/ready"
       initialDelaySeconds: 5
       periodSeconds: 5
+  serviceAccount:
+    name: ""  # defaults to notification-service-sa
+    annotations: {}
 
 # Web Portal Configuration
 webPortal:
@@ -391,6 +412,9 @@ webPortal:
       path: "/"
       initialDelaySeconds: 5
       periodSeconds: 10
+  serviceAccount:
+    name: ""  # defaults to web-portal-sa
+    annotations: {}
 
 # Ingress Configuration
 ingress:

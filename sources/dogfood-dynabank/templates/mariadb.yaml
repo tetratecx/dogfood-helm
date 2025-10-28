@@ -106,6 +106,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: database
     spec:
+      serviceAccountName: {{ .Values.mariadb.serviceAccount.name | default (printf "%s-sa" .Values.mariadb.name) }}
       containers:
         - name: mysql
           image: {{ include "dynabank.image" .Values.mariadb }}

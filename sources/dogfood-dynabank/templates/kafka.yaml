@@ -62,6 +62,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: messaging
     spec:
+      serviceAccountName: {{ .Values.kafka.serviceAccount.name | default (printf "%s-sa" .Values.kafka.name) }}
       containers:
       - name: kafka
         image: {{ include "dynabank.image" .Values.kafka }}

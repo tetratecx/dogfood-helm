@@ -45,6 +45,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: core-banking
     spec:
+      serviceAccountName: {{ .Values.fineract.serviceAccount.name | default (printf "%s-sa" .Values.fineract.name) }}
       initContainers:
         - name: wait-for-db
           image: busybox:1.35

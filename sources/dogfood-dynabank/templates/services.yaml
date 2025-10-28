@@ -20,6 +20,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: fraud-detection
     spec:
+      serviceAccountName: {{ .Values.fraudService.serviceAccount.name | default (printf "%s-sa" .Values.fraudService.name) }}
       containers:
       - name: fraud-service
         image: {{ include "dynabank.image" .Values.fraudService }}
@@ -104,6 +105,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: notification
     spec:
+      serviceAccountName: {{ .Values.notificationService.serviceAccount.name | default (printf "%s-sa" .Values.notificationService.name) }}
       containers:
       - name: notification-service
         image: {{ include "dynabank.image" .Values.notificationService }}
@@ -195,6 +197,7 @@ spec:
         {{- include "dynabank.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: frontend
     spec:
+      serviceAccountName: {{ .Values.webPortal.serviceAccount.name | default (printf "%s-sa" .Values.webPortal.name) }}
       containers:
       - name: web-portal
         image: {{ include "dynabank.image" .Values.webPortal }}
