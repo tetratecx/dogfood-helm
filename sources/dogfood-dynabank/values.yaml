@@ -4,7 +4,6 @@
 # - Core Banking: Apache Fineract with initialization
 # - Services: Transaction API, Fraud Service, Notification Service
 # - Frontend: React Web Portal
-# - Networking: Ingress controllers and load balancing
 
 global:
   # Container registry settings
