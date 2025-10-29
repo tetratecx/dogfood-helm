@@ -110,5 +110,5 @@ capabilities:
 Namespace
 */}}
 {{- define "dynabank.namespace" -}}
-{{- .Values.namespace.name | default .Values.global.namespace | default "dynabank" }}
+{{- .Release.Namespace }}
 {{- end }}

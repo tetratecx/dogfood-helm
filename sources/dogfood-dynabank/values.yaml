@@ -11,9 +11,6 @@ global:
   imageRegistry: us-east1-docker.pkg.dev/dogfood-cx/registryrepository
   imagePullPolicy: Always
 
-  # Namespace configuration
-  namespace: dynabank
-
   # Common labels applied to all resources
   labels:
     app.kubernetes.io/part-of: dynabank
@@ -34,7 +31,6 @@ environment: development  # development, staging, production
 # Component enablement flags - set to false to disable specific components
 components:
   # Infrastructure Components
-  namespace: false
   mariadb: true
   redis: true
   kafka: true
@@ -57,14 +53,6 @@ components:
 
   # Monitoring (optional)
   monitoring: false
-
-# Namespace Configuration
-namespace:
-  create: true
-  name: dynabank
-  labels:
-    name: dynabank
-    app: dynabank-demo
 
 # MariaDB Configuration
 mariadb:
@@ -244,7 +232,7 @@ transactionApi:
   image:
     repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dynabank/transaction-api
     tag: "latest"
-  replicaCount: 2
+  replicaCount: 1
   env:
     PORT: "3000"
     LOG_LEVEL: "info"
@@ -301,7 +289,7 @@ fraudService:
   image:
     repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dynabank/fraud-service
     tag: "latest"
-  replicaCount: 2
+  replicaCount: 1
   env:
     PORT: "8000"
     LOG_LEVEL: "INFO"
@@ -340,7 +328,7 @@ notificationService:
   image:
     repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dynabank/notification-service
     tag: "latest"
-  replicaCount: 2
+  replicaCount: 1
   env:
     PORT: "8080"
     LOG_LEVEL: "info"
@@ -386,7 +374,7 @@ webPortal:
   image:
     repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dynabank/web-portal
     tag: "latest"
-  replicaCount: 2
+  replicaCount: 1
   env:
     PORT: "3000"
     NODE_ENV: "production"
