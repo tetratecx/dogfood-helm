@@ -34,13 +34,38 @@ spec:
     spec:
       serviceAccountName: {{ .Values.transactionApi.serviceAccount.name | default (printf "%s-sa" .Values.transactionApi.name) }}
       containers:
+      {{- if eq .Values.transactionApi.version "v2" }}
+      # Giraffe Sidecar Proxy (v2 deployment)
+      - name: {{ .Values.transactionApi.sidecar.name }}
+        image: {{ .Values.transactionApi.sidecar.image.repository }}:{{ .Values.transactionApi.sidecar.image.tag }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.transactionApi.sidecar.port }}
+          protocol: TCP
+        env:
+        {{- range $key, $value := .Values.transactionApi.sidecar.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.transactionApi.sidecar.resources | nindent 10 }}
+      {{- end }}
+      # Transaction API Application Container
       - name: transaction-api
         image: {{ include "dynabank.image" .Values.transactionApi }}
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         ports:
+        {{- if eq .Values.transactionApi.version "v1" }}
         - name: http
           containerPort: {{ .Values.transactionApi.service.http.targetPort }}
           protocol: TCP
+        {{- else }}
+        # v2: API listens on localhost only, sidecar handles external traffic
+        - name: http
+          containerPort: {{ .Values.transactionApi.service.http.targetPort }}
+          protocol: TCP
+        {{- end }}
         - name: metrics
           containerPort: {{ .Values.transactionApi.service.metrics.targetPort }}
           protocol: TCP
@@ -92,12 +117,20 @@ metadata:
   labels:
     {{- include "dynabank.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend-api
+  {{- if eq .Values.transactionApi.version "v2" }}
+  annotations:
+    description: "Routes to giraffe sidecar proxy on port {{ .Values.transactionApi.sidecar.port }}"
+  {{- end }}
 spec:
   type: ClusterIP
   ports:
   - name: http
     port: {{ .Values.transactionApi.service.http.port }}
+    {{- if eq .Values.transactionApi.version "v2" }}
+    targetPort: {{ .Values.transactionApi.sidecar.port }}
+    {{- else }}
     targetPort: http
+    {{- end }}
     protocol: TCP
   - name: metrics
     port: {{ .Values.transactionApi.service.metrics.port }}

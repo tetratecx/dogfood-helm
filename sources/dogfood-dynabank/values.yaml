@@ -232,6 +232,37 @@ transactionApi:
     repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/dynabank/transaction-api
     tag: "latest"
   replicaCount: 1
+
+  # Deployment version: "v1" (direct) or "v2" (with giraffe sidecar proxy)
+  version: "v1"  # Options: "v1", "v2"
+
+  # Giraffe Sidecar Proxy Configuration (only used when version: "v2")
+  sidecar:
+    enabled: false  # Automatically set to true when version is "v2"
+    image:
+      repository: us-east1-docker.pkg.dev/dogfood-cx/registryrepository/giraffe
+      tag: "latest"
+    name: giraffe-sidecar
+    port: 9080
+    env:
+      SERVICE_NAME: "transaction-api-sidecar"
+      SERVICE_VERSION: "v1"
+      SERVICE_PORT: "9080"
+      HOMEPAGE_NAME: "transaction-api"
+      UPSTREAM_URLS: "http://localhost:3000"
+      CALL_UPSTREAMS: "true"
+      ERROR_RATE: "0.00"  # 0.00 = no errors, 1.00 = 100% errors
+      ERROR_STATUS_CODE: "503"
+      ERROR_MESSAGE: "transaction-api temporarily unavailable"
+      RESPONSE_FIELD_BACKEND_TIER: "api-with-sidecar"
+      RESPONSE_FIELD_ERROR_INJECTION: "disabled"
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
   env:
     PORT: "3000"
     LOG_LEVEL: "info"
