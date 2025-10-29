@@ -48,8 +48,6 @@ environment: {{ .Values.environment | default "development" }}
 Selector labels
 */}}
 {{- define "dynabank.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "dynabank.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
